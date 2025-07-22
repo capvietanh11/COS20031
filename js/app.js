@@ -380,6 +380,7 @@ function renderSchedule() {
 document.getElementById('schedule-tab').onclick = function() {
     document.getElementById('device-groups').style.display = 'none';
     document.getElementById('schedule-section').style.display = '';
+    document.getElementById('dashboard-section').style.display = 'none'; // <-- Add this line
     document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
     document.getElementById('main-header-title').textContent = 'Schedule'; // Set heading
     document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
@@ -391,6 +392,7 @@ document.getElementById('schedule-tab').onclick = function() {
 document.querySelectorAll('.sidebar-nav li')[1].onclick = function() {
     document.getElementById('schedule-section').style.display = 'none';
     document.getElementById('device-groups').style.display = '';
+    document.getElementById('dashboard-section').style.display = 'none'; // <-- Add this line
     document.querySelector('.tab-nav').style.display = ''; // Show room tabs
     document.getElementById('main-header-title').textContent = 'Devices'; // Set heading
     document.querySelector('.main-header-actions').style.display = ''; // Show search

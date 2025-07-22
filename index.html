@@ -53,6 +53,79 @@
             </div>
             <ul id="notification-list" class="notification-list"></ul>
         </div>
+        <div id="device-modal" class="device-modal" style="display:none;">
+            <div class="device-modal-content">
+                <div class="device-modal-header">
+                    <span>Edit Device</span>
+                    <button id="close-device-modal">✖</button>
+                </div>
+                <form id="device-form">
+                    <label>Device Name
+                        <input type="text" id="modal-device-name" required />
+                    </label>
+                    <label>Device Type
+                        <select id="modal-device-type">
+                            <option value="Light">Light</option>
+                            <option value="Thermostat">Thermostat</option>
+                            <option value="Camera">Camera</option>
+                            <option value="Sensor">Sensor</option>
+                            <option value="Plug">Plug</option>
+                            <option value="Speaker">Speaker</option>
+                            <option value="TV">TV</option>
+                            <option value="Fan">Fan</option>
+                            <option value="Door Lock">Door Lock</option>
+                            <option value="Curtain">Curtain</option>
+                            <option value="Humidifier">Humidifier</option>
+                            <option value="Air Purifier">Air Purifier</option>
+                            <option value="Vacuum">Vacuum</option>
+                            <option value="Refrigerator">Refrigerator</option>
+                            <option value="Washer">Washer</option>
+                            <option value="Dryer">Dryer</option>
+                            <option value="Oven">Oven</option>
+                            <option value="Microwave">Microwave</option>
+                            <option value="Router">Router</option>
+                            <option value="Switch">Switch</option>
+                            <option value="Alarm">Alarm</option>
+                            <option value="Blinds">Blinds</option>
+                            <option value="Projector">Projector</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </label>
+                    <label>Location
+                        <input type="text" id="modal-device-location" list="location-suggestions" />
+                        <datalist id="location-suggestions">
+                            <option value="Living Room">
+                            <option value="Bedroom">
+                            <option value="Kitchen">
+                            <option value="Garage">
+                            <option value="Office">
+                            <option value="Hallway">
+                            <option value="Bathroom">
+                            <option value="Porch">
+                            <option value="Dining Room">
+                            <option value="Kids Room">
+                            <option value="Master Bedroom">
+                            <option value="Guest Room">
+                            <option value="Laundry Room">
+                            <option value="Backyard">
+                            <option value="Entryway">
+                            <option value="Other">
+                            <option value="Unassigned">
+                        </datalist>
+                    </label>
+                    <label>Status
+                        <select id="modal-device-status">
+                            <option value="On">On</option>
+                            <option value="Off">Off</option>
+                        </select>
+                    </label>
+                    <div class="device-modal-actions">
+                        <button type="submit" id="save-device-btn">Save</button>
+                        <button type="button" id="cancel-device-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="js/mock-data.js"></script>
     <script src="js/app.js"></script>

@@ -256,4 +256,93 @@ body {
 .notification-list .notification-time {
     font-size: 0.85rem;
     color: #888;
+}
+.device-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.device-modal-content {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    padding: 2rem 2rem 1.5rem 2rem;
+    min-width: 320px;
+    max-width: 95vw;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+.device-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #6a93cb;
+    margin-bottom: 0.5rem;
+}
+#close-device-modal {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+#device-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.7rem;
+    gap: 0.2rem;
+}
+#device-form input, #device-form select {
+    padding: 0.5rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid #d0d6e1;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+}
+.device-modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+#save-device-btn {
+    background: #6a93cb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+#save-device-btn:hover {
+    background: #4b6fa5;
+}
+#cancel-device-btn {
+    background: #e3eafc;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+#cancel-device-btn:hover {
+    background: #d0d6e1;
 } 

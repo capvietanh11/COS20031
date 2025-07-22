@@ -6,6 +6,7 @@ function getRooms(devices) {
 
 let currentSearch = '';
 let currentRoom = 'all';
+let editingDevice = null;
 
 function getFilteredDevices(devices, filterRoom, searchText) {
     return devices.filter(device => {
@@ -115,7 +116,8 @@ function createDeviceCard(device, filterRoom) {
     const control = document.createElement('button');
     control.className = 'device-control';
     control.innerHTML = device.Status === 'On' ? '🟢' : '🔴';
-    control.onclick = () => {
+    control.onclick = (e) => {
+        e.stopPropagation();
         const newStatus = device.Status === 'On' ? 'Off' : 'On';
         device.Status = newStatus;
         // Generate notification
@@ -131,7 +133,26 @@ function createDeviceCard(device, filterRoom) {
         renderNotificationBadge();
     };
     card.appendChild(control);
+    // Card click (not button)
+    card.onclick = function(e) {
+        if (e.target === control) return;
+        openDeviceModal(device);
+    };
     return card;
+}
+
+function openDeviceModal(device) {
+    editingDevice = device;
+    document.getElementById('modal-device-name').value = device.DeviceName;
+    document.getElementById('modal-device-type').value = device.DeviceType;
+    document.getElementById('modal-device-location').value = device.Location || 'Unassigned';
+    document.getElementById('modal-device-status').value = device.Status;
+    document.getElementById('device-modal').style.display = 'flex';
+}
+
+function closeDeviceModal() {
+    document.getElementById('device-modal').style.display = 'none';
+    editingDevice = null;
 }
 
 function getUnreadNotificationCount() {
@@ -186,5 +207,23 @@ window.onload = function() {
     };
     document.getElementById('close-notification-popup').onclick = function() {
         closeNotificationPopup();
+    };
+    // Device modal events
+    document.getElementById('close-device-modal').onclick = closeDeviceModal;
+    document.getElementById('cancel-device-btn').onclick = function(e) {
+        e.preventDefault();
+        closeDeviceModal();
+    };
+    document.getElementById('device-form').onsubmit = function(e) {
+        e.preventDefault();
+        if (!editingDevice) return;
+        editingDevice.DeviceName = document.getElementById('modal-device-name').value;
+        editingDevice.DeviceType = document.getElementById('modal-device-type').value;
+        const locVal = document.getElementById('modal-device-location').value;
+        editingDevice.Location = (locVal === 'Unassigned') ? null : locVal;
+        editingDevice.Status = document.getElementById('modal-device-status').value;
+        closeDeviceModal();
+        renderRoomTabs(getRooms(devices));
+        renderDeviceGroups(currentRoom, currentSearch);
     };
 };

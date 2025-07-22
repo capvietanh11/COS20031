@@ -345,4 +345,10 @@ body {
 }
 #cancel-device-btn:hover {
     background: #d0d6e1;
+}
+.sidebar-logo-img {
+    height: 80px;
+    width: 80px;
+    object-fit: contain;
+    display: block;
 } 

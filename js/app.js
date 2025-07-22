@@ -222,8 +222,18 @@ window.onload = function() {
         const locVal = document.getElementById('modal-device-location').value;
         editingDevice.Location = (locVal === 'Unassigned') ? null : locVal;
         editingDevice.Status = document.getElementById('modal-device-status').value;
+        // Generate notification for device update
+        const now = new Date();
+        notifications.unshift({
+            NotificationID: notifications.length + 1,
+            UserID: 1, // For demo, always user 1
+            Message: `${editingDevice.DeviceName} information was updated.`,
+            SentTime: now.toLocaleString(),
+            Status: 'Unread'
+        });
         closeDeviceModal();
         renderRoomTabs(getRooms(devices));
         renderDeviceGroups(currentRoom, currentSearch);
+        renderNotificationBadge();
     };
 };

@@ -59,6 +59,30 @@
                     <!-- Event flexboxes will be rendered here -->
                 </div>
             </section>
+            <section id="dashboard-section" style="display:none;">
+                <div class="dashboard-top-row" style="display:flex;gap:2rem;margin-bottom:2rem;">
+                    <div class="dashboard-summary-card" style="flex:1;"></div>
+                    <div class="dashboard-line-chart" style="flex:2;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:1.5rem;">
+                        <canvas id="energy-line-chart" height="120"></canvas>
+                    </div>
+                </div>
+                <div class="dashboard-bottom-row" style="display:flex;gap:2rem;">
+                    <div class="dashboard-room-status" style="flex:1;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:1.5rem;">
+                        <h3>Room Status Overview</h3>
+                        <div id="room-status-chart"></div>
+                    </div>
+                    <div class="dashboard-quick-actions" style="flex:0.7;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:1.5rem;display:flex;flex-direction:column;align-items:center;">
+                        <h3>Quick Actions</h3>
+                        <button class="quick-action-btn" data-action="all-on">Turn All On</button>
+                        <button class="quick-action-btn" data-action="all-off">Turn All Off</button>
+                        <button class="quick-action-btn" data-action="reset">Reset Devices</button>
+                    </div>
+                    <div class="dashboard-activity-log" style="flex:1.2;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:1.5rem;display:flex;flex-direction:column;">
+                        <h3>Recent Activity Log</h3>
+                        <ul id="dashboard-activity-list" style="overflow-y:auto;max-height:220px;padding-left:1rem;"></ul>
+                    </div>
+                </div>
+            </section>
         </main>
         <div id="notification-popup" class="notification-popup" style="display:none;">
             <div class="notification-popup-header">
@@ -176,6 +200,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/app.js"></script>
 </body>

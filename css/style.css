@@ -443,3 +443,60 @@ body {
 .schedule-event-btn.remove:hover {
     background: #ffd6d6;
 }
+.dashboard-summary-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    min-width: 220px;
+}
+.dashboard-summary-card .summary-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+}
+.dashboard-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+.dashboard-summary-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.05rem;
+}
+.quick-action-btn {
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.7rem 0;
+    border-radius: 8px;
+    border: none;
+    background: #6a93cb;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.quick-action-btn:hover {
+    background: #4b6fa5;
+}
+.dashboard-activity-log ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.dashboard-activity-log li {
+    font-size: 0.97rem;
+    margin-bottom: 0.7rem;
+    color: #444;
+    border-left: 3px solid #e3eafc;
+    padding-left: 0.7rem;
+}
+.dashboard-activity-log li:last-child {
+    margin-bottom: 0;
+}

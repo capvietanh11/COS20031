@@ -8,7 +8,6 @@ let currentSearch = '';
 let currentRoom = 'all';
 let editingDevice = null;
 let currentSort = 'name-asc';
-let currentGroupBy = 'room';
 
 function getFilteredDevices(devices, filterRoom, searchText) {
     return devices.filter(device => {
@@ -17,21 +16,6 @@ function getFilteredDevices(devices, filterRoom, searchText) {
         return inRoom && matchesSearch;
     });
 }
-
-// Helper to get unique device types
-function getDeviceTypes(devices) {
-    return Array.from(new Set(devices.map(d => d.DeviceType)));
-}
-
-// Helper to get recent event for a device
-function getRecentEvent(deviceID) {
-    const events = eventLogs.filter(e => e.RelatedDeviceID === deviceID);
-    if (events.length === 0) return null;
-    events.sort((a, b) => new Date(b.CreateAt) - new Date(a.CreateAt));
-    return events[0];
-}
-
-let selectedDevices = new Set();
 
 // Render room tabs
 function renderRoomTabs(rooms) {
@@ -57,48 +41,93 @@ function renderDeviceGroups(filterRoom = 'all', searchText = '') {
     const groupContainer = document.getElementById('device-groups');
     groupContainer.innerHTML = '';
 
-    let deviceGroups = {};
-    let groupKeys = [];
+    const deviceGroups = {};
 
-    // Enhanced search: match name, type, or location
-    const filteredDevices = devices.filter(device => {
-        const search = searchText.toLowerCase();
-        return (
-            device.DeviceName.toLowerCase().includes(search) ||
-            device.DeviceType.toLowerCase().includes(search) ||
-            (device.Location && device.Location.toLowerCase().includes(search))
-        ) && (filterRoom === 'all' || device.Location === filterRoom);
+    // Group all devices by their location
+    devices.forEach(device => {
+        if (!device.DeviceName.toLowerCase().includes(searchText.toLowerCase())) return;
+        const location = device.Location || 'Unassigned'; // Group null/empty locations
+        if (!deviceGroups[location]) {
+            deviceGroups[location] = [];
+        }
+        deviceGroups[location].push(device);
     });
 
-    if (currentGroupBy === 'room') {
-        filteredDevices.forEach(device => {
-            const location = device.Location || 'Unassigned';
-            if (!deviceGroups[location]) deviceGroups[location] = [];
-            deviceGroups[location].push(device);
+    // Apply sorting to the devices within each group
+    Object.keys(deviceGroups).forEach(groupName => {
+        deviceGroups[groupName].sort((a, b) => {
+            switch (currentSort) {
+                case 'name-asc':
+                    return a.DeviceName.localeCompare(b.DeviceName);
+                case 'name-desc':
+                    return b.DeviceName.localeCompare(a.DeviceName);
+                case 'status-on':
+                    return a.Status === b.Status ? 0 : a.Status === 'On' ? -1 : 1;
+                case 'status-off':
+                    return a.Status === b.Status ? 0 : a.Status === 'Off' ? -1 : 1;
+                default:
+                    return 0;
+            }
         });
-        groupKeys = Object.keys(deviceGroups).sort();
-    } else {
-        filteredDevices.forEach(device => {
-            const type = device.DeviceType;
-            if (!deviceGroups[type]) deviceGroups[type] = [];
-            deviceGroups[type].push(device);
-        });
-        groupKeys = getDeviceTypes(filteredDevices).sort();
-    }
+    });
 
-    // Bulk action bar
-    renderBulkActionBar();
+    // Determine which rooms to display based on the filter
+    const roomsToDisplay = filterRoom === 'all' ? Object.keys(deviceGroups) : [filterRoom];
 
-    groupKeys.forEach(group => {
+    // Define the order, with special groups last
+    const specialGroups = ['Other', 'Unassigned'];
+    const sortedRoomsToDisplay = [
+        ...roomsToDisplay.filter(r => !specialGroups.includes(r)).sort(),
+        ...roomsToDisplay.filter(r => r === 'Other'),
+        ...roomsToDisplay.filter(r => r === 'Unassigned')
+    ];
+
+    // Render the device groups
+    sortedRoomsToDisplay.forEach((room, index) => {
+        if (!deviceGroups[room]) return;
+
+        const devicesInRoom = deviceGroups[room];
         const groupDiv = document.createElement('div');
         groupDiv.className = 'device-group';
+
+        // Add a separator line for special groups when all devices are shown
+        if (filterRoom === 'all' && specialGroups.includes(room)) {
+            // Add separator only before the first special group
+            if (index > 0 && !specialGroups.includes(sortedRoomsToDisplay[index - 1])) {
+                groupDiv.classList.add('special-group');
+            }
+        }
+
         const title = document.createElement('div');
         title.className = 'device-group-title';
-        title.textContent = group;
+
+        const titleText = document.createElement('span');
+        titleText.textContent = room;
+        title.appendChild(titleText);
+
+        const quickActions = document.createElement('div');
+        quickActions.className = 'quick-actions';
+        const turnAllOn = document.createElement('button');
+        turnAllOn.textContent = 'All On';
+        turnAllOn.onclick = () => {
+            devicesInRoom.forEach(d => d.Status = 'On');
+            renderDeviceGroups(filterRoom, currentSearch);
+        };
+        const turnAllOff = document.createElement('button');
+        turnAllOff.textContent = 'All Off';
+        turnAllOff.onclick = () => {
+            devicesInRoom.forEach(d => d.Status = 'Off');
+            renderDeviceGroups(filterRoom, currentSearch);
+        };
+        quickActions.appendChild(turnAllOn);
+        quickActions.appendChild(turnAllOff);
+        title.appendChild(quickActions);
+
         groupDiv.appendChild(title);
+
         const grid = document.createElement('div');
         grid.className = 'device-grid';
-        deviceGroups[group].forEach(device => {
+        devicesInRoom.forEach(device => {
             const card = createDeviceCard(device, filterRoom);
             grid.appendChild(card);
         });
@@ -134,39 +163,19 @@ function getDeviceTypeIcon(deviceType) {
 function createDeviceCard(device, filterRoom) {
     const card = document.createElement('div');
     card.className = 'device-card';
-    // Checkbox for bulk actions
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.className = 'device-select-checkbox';
-    checkbox.checked = selectedDevices.has(device.DeviceID);
-    checkbox.onclick = (e) => {
-        e.stopPropagation();
-        if (checkbox.checked) {
-            selectedDevices.add(device.DeviceID);
-        } else {
-            selectedDevices.delete(device.DeviceID);
-        }
-        renderBulkActionBar();
-    };
-    card.appendChild(checkbox);
+    
     // Device name
     const name = document.createElement('div');
     name.className = 'device-name';
     name.textContent = device.DeviceName;
     card.appendChild(name);
+    
     // Device Icon
     const icon = document.createElement('div');
     icon.className = 'device-icon';
     icon.textContent = getDeviceTypeIcon(device.DeviceType);
     card.appendChild(icon);
-    // Recent event
-    const recentEvent = getRecentEvent(device.DeviceID);
-    if (recentEvent) {
-        const eventDiv = document.createElement('div');
-        eventDiv.className = 'device-recent-event';
-        eventDiv.textContent = `${recentEvent.EventType}: ${recentEvent.Description}`;
-        card.appendChild(eventDiv);
-    }
+
     // Delete button
     const deleteBtn = document.createElement('span');
     deleteBtn.className = 'device-delete-btn';
@@ -175,10 +184,12 @@ function createDeviceCard(device, filterRoom) {
     deleteBtn.onclick = (e) => {
         e.stopPropagation();
         if (confirm(`Are you sure you want to delete ${device.DeviceName}?`)) {
+            // Find index and remove device
             const deviceIndex = devices.findIndex(d => d.DeviceID === device.DeviceID);
             if (deviceIndex > -1) {
                 devices.splice(deviceIndex, 1);
             }
+            // Generate notification
             const now = new Date();
             notifications.unshift({
                 NotificationID: notifications.length + 1,
@@ -187,12 +198,14 @@ function createDeviceCard(device, filterRoom) {
                 SentTime: now.toLocaleString(),
                 Status: 'Unread'
             });
+            // Re-render
             renderDeviceGroups(filterRoom, currentSearch);
             renderNotificationBadge();
         }
     };
     card.appendChild(deleteBtn);
-    // Control button
+
+    // Control button with status icon
     const control = document.createElement('button');
     control.className = 'device-control';
     control.innerHTML = device.Status === 'On' ? '🟢' : '🔴';
@@ -201,6 +214,7 @@ function createDeviceCard(device, filterRoom) {
         e.stopPropagation();
         const newStatus = device.Status === 'On' ? 'Off' : 'On';
         device.Status = newStatus;
+        // Generate notification
         const now = new Date();
         notifications.unshift({
             NotificationID: notifications.length + 1,
@@ -215,53 +229,10 @@ function createDeviceCard(device, filterRoom) {
     card.appendChild(control);
     // Card click (not button)
     card.onclick = function(e) {
-        if (e.target === control || e.target === deleteBtn || e.target === checkbox) return;
+        if (e.target === control) return;
         openDeviceModal(device);
     };
     return card;
-}
-
-function renderBulkActionBar() {
-    let bar = document.getElementById('bulk-action-bar');
-    if (!bar) {
-        bar = document.createElement('div');
-        bar.id = 'bulk-action-bar';
-        bar.className = 'bulk-action-bar';
-        document.body.appendChild(bar);
-    }
-    if (selectedDevices.size === 0) {
-        bar.style.display = 'none';
-        return;
-    }
-    bar.style.display = 'flex';
-    bar.innerHTML = `<span>${selectedDevices.size} selected</span>`;
-    const turnOnBtn = document.createElement('button');
-    turnOnBtn.textContent = 'Turn On';
-    turnOnBtn.onclick = () => {
-        devices.forEach(d => { if (selectedDevices.has(d.DeviceID)) d.Status = 'On'; });
-        renderDeviceGroups(currentRoom, currentSearch);
-    };
-    const turnOffBtn = document.createElement('button');
-    turnOffBtn.textContent = 'Turn Off';
-    turnOffBtn.onclick = () => {
-        devices.forEach(d => { if (selectedDevices.has(d.DeviceID)) d.Status = 'Off'; });
-        renderDeviceGroups(currentRoom, currentSearch);
-    };
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.onclick = () => {
-        if (confirm('Delete selected devices?')) {
-            for (const id of selectedDevices) {
-                const idx = devices.findIndex(d => d.DeviceID === id);
-                if (idx > -1) devices.splice(idx, 1);
-            }
-            selectedDevices.clear();
-            renderDeviceGroups(currentRoom, currentSearch);
-        }
-    };
-    bar.appendChild(turnOnBtn);
-    bar.appendChild(turnOffBtn);
-    bar.appendChild(deleteBtn);
 }
 
 function openDeviceModal(device) {
@@ -362,11 +333,6 @@ window.onload = function() {
     const sortDropdown = document.getElementById('sort-devices-dropdown');
     sortDropdown.addEventListener('change', function(e) {
         currentSort = e.target.value;
-        renderDeviceGroups(currentRoom, currentSearch);
-    });
-    const groupByDropdown = document.getElementById('group-by-dropdown');
-    groupByDropdown.addEventListener('change', function(e) {
-        currentGroupBy = e.target.value;
         renderDeviceGroups(currentRoom, currentSearch);
     });
     // In sidebar-header (settings button)

@@ -88,6 +88,17 @@ body {
     background: #f5f7fa;
     color: #333;
 }
+.sort-dropdown {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    background: #f5f7fa;
+    color: #333;
+    margin-right: 1rem;
+    cursor: pointer;
+}
 .tab-nav ul {
     display: flex;
     gap: 1.5rem;
@@ -119,6 +130,29 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.quick-actions button {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.quick-actions button:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 .device-grid {
     display: grid;
@@ -135,17 +169,31 @@ body {
     align-items: flex-start;
     position: relative;
     min-height: 110px;
+    animation: fade-in 0.4s ease-in-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 .device-card .device-icon {
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
-    color: #6a93cb;
+    font-size: 2.5rem; /* Larger icon */
+    text-align: left;
+    margin-top: auto; /* Pushes icon to the bottom */
+    padding-top: 0.5rem;
+    color: #333;
 }
 .device-card .device-name {
     font-size: 1.1rem;
     font-weight: 500;
     color: #333;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.5rem; /* Increased margin */
     white-space: normal;
     word-break: break-word;
     padding-right: 48px;
@@ -351,4 +399,70 @@ body {
     width: 80px;
     object-fit: contain;
     display: block;
+}
+.device-card .device-delete-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.device-card .device-delete-btn:hover {
+    opacity: 1;
+}
+.device-select-checkbox {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 18px;
+    height: 18px;
+    accent-color: #6a93cb;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.bulk-action-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    border-radius: 16px;
+    padding: 0.7rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    z-index: 3000;
+    font-size: 1rem;
+    color: #333;
+    min-width: 260px;
+}
+
+.bulk-action-bar button {
+    background: #6a93cb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.4rem 1.1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.bulk-action-bar button:hover {
+    background: #4b6fa5;
+}
+
+.device-recent-event {
+    font-size: 0.92rem;
+    color: #6a93cb;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    font-style: italic;
+    min-height: 1.2em;
 } 

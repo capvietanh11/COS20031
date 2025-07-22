@@ -15,11 +15,10 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><span>🏠</span> Home</li>
+                    <li><span>🏠</span> Dashboard</li>
                     <li class="active"><span>📺</span> Devices</li>
-                    <li><span>📋</span> Life</li>
-                    <li><span>⏰</span> Schedule</li>
-                    <li><span>☰</span> Menu</li>
+                    <li id="schedule-tab"><span>⏰</span> Schedule</li>
+                    <li><span>📊</span> Analytics</li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -31,7 +30,7 @@
         </aside>
         <main class="main-content">
             <header class="main-header">
-                <h2>Your Home ▼</h2>
+                <h2 id="main-header-title">Devices</h2>
                 <div class="main-header-actions">
                     <select id="sort-devices-dropdown" class="sort-dropdown">
                         <option value="name-asc">Sort by Name (A-Z)</option>
@@ -50,6 +49,15 @@
             </nav>
             <section id="device-groups">
                 <!-- Device groups and cards will be rendered here by app.js -->
+            </section>
+            <section id="schedule-section" style="display:none;">
+                <div class="main-header">
+                    <h2>Habit Schedule</h2>
+                    <button id="add-event-btn" style="padding:0.5rem 1rem;border-radius:6px;background:#6a93cb;color:#fff;border:none;cursor:pointer;">Add Event</button>
+                </div>
+                <div id="schedule-events-container" class="schedule-events-container">
+                    <!-- Event flexboxes will be rendered here -->
+                </div>
             </section>
         </main>
         <div id="notification-popup" class="notification-popup" style="display:none;">
@@ -132,8 +140,43 @@
                 </form>
             </div>
         </div>
+        <div id="add-event-modal" class="device-modal" style="display:none;">
+            <div class="device-modal-content">
+                <div class="device-modal-header">
+                    <span>Add Habit Event</span>
+                    <button id="close-add-event-modal">✖</button>
+                </div>
+                <form id="add-event-form">
+                    <label>Event Name
+                        <input type="text" id="event-name-input" required />
+                    </label>
+                    <label>Time
+                        <input type="time" id="event-time-input" required />
+                    </label>
+                    <div class="device-modal-actions">
+                        <button type="submit" id="save-event-btn">Save</button>
+                        <button type="button" id="cancel-event-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="event-setting-modal" class="device-modal" style="display:none;">
+            <div class="device-modal-content">
+                <div class="device-modal-header">
+                    <span>Configure Devices</span>
+                    <button id="close-event-setting-modal">✖</button>
+                </div>
+                <form id="event-setting-form">
+                    <div id="event-devices-list" style="margin-bottom:1rem;"></div>
+                    <div class="device-modal-actions">
+                        <button type="submit" id="save-event-setting-btn">Save</button>
+                        <button type="button" id="cancel-event-setting-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="js/mock-data.js"></script>
     <script src="js/app.js"></script>
 </body>
-</html> 
+</html>

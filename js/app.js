@@ -111,13 +111,33 @@ function renderDeviceGroups(filterRoom = 'all', searchText = '') {
         turnAllOn.textContent = 'All On';
         turnAllOn.onclick = () => {
             devicesInRoom.forEach(d => d.Status = 'On');
+            // Notification
+            const now = new Date();
+            notifications.unshift({
+                NotificationID: notifications.length + 1,
+                UserID: 1,
+                Message: `All devices in ${room} were turned on.`,
+                SentTime: now.toLocaleString(),
+                Status: 'Unread'
+            });
             renderDeviceGroups(filterRoom, currentSearch);
+            renderNotificationBadge();
         };
         const turnAllOff = document.createElement('button');
         turnAllOff.textContent = 'All Off';
         turnAllOff.onclick = () => {
             devicesInRoom.forEach(d => d.Status = 'Off');
+            // Notification
+            const now = new Date();
+            notifications.unshift({
+                NotificationID: notifications.length + 1,
+                UserID: 1,
+                Message: `All devices in ${room} were turned off.`,
+                SentTime: now.toLocaleString(),
+                Status: 'Unread'
+            });
             renderDeviceGroups(filterRoom, currentSearch);
+            renderNotificationBadge();
         };
         quickActions.appendChild(turnAllOn);
         quickActions.appendChild(turnAllOff);

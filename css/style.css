@@ -331,6 +331,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    max-height: 80vh; /* Limit modal height */
+    overflow: hidden;  /* Hide overflow except for device list */
 }
 .device-modal-header {
     display: flex;
@@ -529,4 +531,25 @@ body {
 #top-devices-list, #automation-rule-list, #access-attempts-list, #device-health-list, #event-type-list {
     font-size: 0.97rem;
     margin-top: 0.5rem;
+}
+#event-devices-list {
+    margin-bottom: 1rem;
+    max-height: 48vh;   /* Limit device list height */
+    overflow-y: auto;   /* Enable vertical scroll */
+    width: 100%;
+    padding-right: 6px; /* Space for scrollbar */
+}
+.event-device-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.7rem;
+    gap: 1rem;
+}
+.event-device-row label {
+    flex: 1;
+    font-weight: 500;
+}
+.event-device-row select, .event-device-row input[type="range"] {
+    min-width: 80px;
 }

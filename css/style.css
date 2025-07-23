@@ -1,8 +1,11 @@
+html, body {
+    height: 100%;
+    background: linear-gradient(135deg, #a3c2f7 0%, #6a93cb 100%);
+    min-height: 100vh;
+}
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
-    background: linear-gradient(135deg, #6a93cb 0%, #a4bfef 100%);
-    min-height: 100vh;
 }
 .container {
     display: flex;
@@ -499,4 +502,31 @@ body {
 }
 .dashboard-activity-log li:last-child {
     margin-bottom: 0;
+}
+.analytics-header {
+    margin-bottom: 2rem;
+}
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+.analytics-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1.5rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 320px;
+}
+.analytics-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+}
+#top-devices-list, #automation-rule-list, #access-attempts-list, #device-health-list, #event-type-list {
+    font-size: 0.97rem;
+    margin-top: 0.5rem;
 }

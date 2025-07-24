@@ -307,28 +307,28 @@ body {
     color: #888;
 }
 .device-modal {
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.25);
-    display: flex;
+    z-index: 1001;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(60,80,120,0.18);
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+}
+.device-modal[style*="display: flex"] {
+    display: flex !important;
 }
 .device-modal-content {
     background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-    padding: 2rem 2rem 1.5rem 2rem;
-    min-width: 320px;
-    max-width: 95vw;
+    border-radius: 16px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.18);
     width: 350px;
+    max-width: 95vw;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 .device-modal-header {
     display: flex;
@@ -336,64 +336,44 @@ body {
     justify-content: space-between;
     font-size: 1.2rem;
     font-weight: 600;
-    color: #6a93cb;
-    margin-bottom: 0.5rem;
-}
-#close-device-modal {
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-#device-form label {
-    display: flex;
-    flex-direction: column;
-    font-size: 1rem;
-    color: #333;
-    margin-bottom: 0.7rem;
-    gap: 0.2rem;
-}
-#device-form input, #device-form select {
-    padding: 0.5rem 0.7rem;
-    border-radius: 6px;
-    border: 1px solid #d0d6e1;
-    font-size: 1rem;
-    margin-top: 0.2rem;
+    margin-bottom: 1rem;
 }
 .device-modal-actions {
     display: flex;
     gap: 1rem;
-    justify-content: flex-end;
+    justify-content: center; /* Center buttons */
+    width: 100%;
     margin-top: 1rem;
 }
-#save-device-btn {
-    background: #6a93cb;
-    color: #fff;
-    border: none;
+.device-modal input, .device-modal select {
+    width: 90%; /* Make input width smaller for centering */
+    margin: 0.2rem 0 0.8rem 0;
+    padding: 0.5rem 0.8rem;
     border-radius: 6px;
-    padding: 0.5rem 1.2rem;
+    border: 1px solid #dbe3ef;
     font-size: 1rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s;
+    background: #f5f7fa;
+    display: block;
+    text-align: center; /* Center text inside input */
 }
-#save-device-btn:hover {
-    background: #4b6fa5;
-}
-#cancel-device-btn {
-    background: #e3eafc;
-    color: #333;
-    border: none;
-    border-radius: 6px;
-    padding: 0.5rem 1.2rem;
+.device-modal label {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center label and input */
     font-size: 1rem;
-    cursor: pointer;
     font-weight: 500;
-    transition: background 0.2s;
+    color: #444;
+    margin-bottom: 0.2rem;
 }
-#cancel-device-btn:hover {
-    background: #d0d6e1;
+.device-modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center children horizontally */
+    gap: 0.5rem;
+}
+.device-modal button {
+    font-size: 1rem;
 }
 .sidebar-logo-img {
     height: 80px;
@@ -414,6 +394,7 @@ body {
 .device-card .device-delete-btn:hover {
     opacity: 1;
 }
+/* Device controls styles */
 .temp-control, .fan-control, .speaker-control, .tv-control, .lock-control, .curtain-control, .plug-control, .ap-control, .light-brightness-control, .light-color-control {
     width: 100%;
     display: flex;
@@ -493,4 +474,112 @@ body {
     margin-top: 0.3rem;
     font-size: 1rem;
     justify-content: flex-start;
-} 
+}
+/* Schedule and dashboard styles */
+.schedule-events-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+}
+.schedule-event-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 1rem 1.5rem;
+    min-width: 260px;
+    gap: 1.2rem;
+}
+.schedule-event-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+    margin-right: 1.2rem;
+}
+.schedule-event-time {
+    color: #6a93cb;
+    font-size: 1rem;
+    margin-right: 1.2rem;
+}
+.schedule-event-btn {
+    background: #e3eafc;
+    border: none;
+    border-radius: 6px;
+    padding: 0.4rem 0.9rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    transition: background 0.2s;
+}
+.schedule-event-btn:last-child {
+    margin-right: 0;
+}
+.schedule-event-btn.setting {
+    color: #4b6fa5;
+}
+.schedule-event-btn.remove {
+    color: #e74c3c;
+    background: #ffeaea;
+}
+.schedule-event-btn.remove:hover {
+    background: #ffd6d6;
+}
+.dashboard-summary-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    min-width: 220px;
+}
+.dashboard-summary-card .summary-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+}
+.dashboard-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+.dashboard-summary-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.05rem;
+}
+.quick-action-btn {
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.7rem 0;
+    border-radius: 8px;
+    border: none;
+    background: #6a93cb;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.quick-action-btn:hover {
+    background: #4b6fa5;
+}
+.dashboard-activity-log ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.dashboard-activity-log li {
+    font-size: 0.97rem;
+    margin-bottom: 0.7rem;
+    color: #444;
+    border-left: 3px solid #e3eafc;
+    padding-left: 0.7rem;
+}
+.dashboard-activity-log li:last-child {
+    margin-bottom: 0;
+}

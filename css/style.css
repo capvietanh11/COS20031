@@ -160,43 +160,44 @@ body {
     gap: 1.2rem;
 }
 .device-card {
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.95);
     border-radius: 18px;
     padding: 1.2rem 1rem 1rem 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 16px rgba(106,147,203,0.10);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     position: relative;
-    min-height: 110px;
+    min-height: 140px;
     animation: fade-in 0.4s ease-in-out;
+    transition: box-shadow 0.2s, transform 0.2s;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
 }
-
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.device-card .device-icon {
-    font-size: 2.5rem; /* Larger icon */
-    text-align: left;
-    margin-top: auto; /* Pushes icon to the bottom */
-    padding-top: 0.5rem;
-    color: #333;
+.device-card:hover {
+    box-shadow: 0 8px 32px rgba(106,147,203,0.18);
+    transform: translateY(-2px) scale(1.02);
+    z-index: 2;
 }
 .device-card .device-name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 0.5rem; /* Increased margin */
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #2d3a4a;
+    margin-bottom: 0.5rem;
     white-space: normal;
     word-break: break-word;
     padding-right: 48px;
+    letter-spacing: 0.01em;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+.device-card .device-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: #6a93cb;
+    align-self: center;
 }
 .device-card .device-control {
     position: absolute;
@@ -412,4 +413,84 @@ body {
 
 .device-card .device-delete-btn:hover {
     opacity: 1;
+}
+.temp-control, .fan-control, .speaker-control, .tv-control, .lock-control, .curtain-control, .plug-control, .ap-control, .light-brightness-control, .light-color-control {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+    font-size: 1rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+.temp-btn, .fan-speed-btn, .speaker-vol-btn, .tv-ch-btn, .tv-vol-btn, .ap-speed-btn {
+    background: #e3eafc;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+    color: #6a93cb;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+.temp-btn:hover, .fan-speed-btn:hover, .speaker-vol-btn:hover, .tv-ch-btn:hover, .tv-vol-btn:hover, .ap-speed-btn:hover {
+    background: #6a93cb;
+    color: #fff;
+}
+.speaker-mute-btn, .lock-btn {
+    background: #e3eafc;
+    border: none;
+    border-radius: 12px;
+    padding: 0.3rem 1rem;
+    font-size: 1rem;
+    color: #6a93cb;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+.speaker-mute-btn:hover, .lock-btn:hover {
+    background: #6a93cb;
+    color: #fff;
+}
+.curtain-slider, .light-brightness-slider {
+    width: 90px;
+}
+.curtain-value, .light-brightness-value, .fan-speed-value, .speaker-vol-value, .tv-ch-value, .tv-vol-value, .ap-speed-value {
+    min-width: 36px;
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+    max-width: 48px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.light-color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    display: inline-block;
+}
+.light-color-picker {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+.camera-control, .ap-control {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+    font-size: 1rem;
+    justify-content: flex-start;
 } 

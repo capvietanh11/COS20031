@@ -196,6 +196,430 @@ function createDeviceCard(device, filterRoom) {
     icon.textContent = getDeviceTypeIcon(device.DeviceType);
     card.appendChild(icon);
 
+    // Light controls
+    if (device.DeviceType === 'Light') {
+        // Brightness slider
+        const brightControl = document.createElement('div');
+        brightControl.className = 'light-brightness-control';
+        const brightLabel = document.createElement('span');
+        brightLabel.textContent = 'Brightness:';
+        const brightSlider = document.createElement('input');
+        brightSlider.type = 'range';
+        brightSlider.min = 0;
+        brightSlider.max = 100;
+        brightSlider.value = device.Brightness;
+        brightSlider.className = 'light-brightness-slider';
+        brightSlider.oninput = (e) => {
+            device.Brightness = parseInt(e.target.value);
+            brightValue.textContent = device.Brightness + '%';
+        };
+        brightSlider.onchange = (e) => {
+            const now = new Date();
+            notifications.unshift({
+                NotificationID: notifications.length + 1,
+                UserID: 1,
+                Message: `${device.DeviceName} brightness set to ${device.Brightness}%.`,
+                SentTime: now.toLocaleString(),
+                Status: 'Unread'
+            });
+            renderNotificationBadge();
+        };
+        const brightValue = document.createElement('span');
+        brightValue.className = 'light-brightness-value';
+        brightValue.textContent = device.Brightness + '%';
+        brightControl.appendChild(brightLabel);
+        brightControl.appendChild(brightSlider);
+        brightControl.appendChild(brightValue);
+        card.appendChild(brightControl);
+        // Color swatch and picker
+        const colorControl = document.createElement('div');
+        colorControl.className = 'light-color-control';
+        const colorLabel = document.createElement('span');
+        colorLabel.textContent = 'Color:';
+        const colorSwatch = document.createElement('span');
+        colorSwatch.className = 'light-color-swatch';
+        colorSwatch.style.background = device.Color;
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.value = device.Color;
+        colorInput.className = 'light-color-picker';
+        colorInput.oninput = (e) => {
+            device.Color = e.target.value;
+            colorSwatch.style.background = device.Color;
+        };
+        colorInput.onchange = (e) => {
+            const now = new Date();
+            notifications.unshift({
+                NotificationID: notifications.length + 1,
+                UserID: 1,
+                Message: `${device.DeviceName} color changed.`,
+                SentTime: now.toLocaleString(),
+                Status: 'Unread'
+            });
+            renderNotificationBadge();
+        };
+        colorControl.appendChild(colorLabel);
+        colorControl.appendChild(colorSwatch);
+        colorControl.appendChild(colorInput);
+        card.appendChild(colorControl);
+    }
+
+    // Temperature controls for Thermostat/Air Conditioner
+    if (device.DeviceType === 'Thermostat' || device.DeviceType === 'Air Conditioner') {
+        const tempControl = document.createElement('div');
+        tempControl.className = 'temp-control';
+        const downBtn = document.createElement('button');
+        downBtn.className = 'temp-btn';
+        downBtn.textContent = '−';
+        downBtn.title = 'Decrease Temperature';
+        downBtn.onclick = (e) => {
+            e.stopPropagation();
+            device.Temperature--;
+            const now = new Date();
+            notifications.unshift({
+                NotificationID: notifications.length + 1,
+                UserID: 1,
+                Message: `${device.DeviceName} temperature set to ${device.Temperature}°C.`,
+                SentTime: now.toLocaleString(),
+                Status: 'Unread'
+            });
+            renderDeviceGroups(filterRoom, currentSearch);
+            renderNotificationBadge();
+        };
+        const tempValue = document.createElement('span');
+        tempValue.className = 'temp-value';
+        tempValue.textContent = `${device.Temperature}°C`;
+        const upBtn = document.createElement('button');
+        upBtn.className = 'temp-btn';
+        upBtn.textContent = '+';
+        upBtn.title = 'Increase Temperature';
+        upBtn.onclick = (e) => {
+            e.stopPropagation();
+            device.Temperature++;
+            const now = new Date();
+            notifications.unshift({
+                NotificationID: notifications.length + 1,
+                UserID: 1,
+                Message: `${device.DeviceName} temperature set to ${device.Temperature}°C.`,
+                SentTime: now.toLocaleString(),
+                Status: 'Unread'
+            });
+            renderDeviceGroups(filterRoom, currentSearch);
+            renderNotificationBadge();
+        };
+        tempControl.appendChild(downBtn);
+        tempControl.appendChild(tempValue);
+        tempControl.appendChild(upBtn);
+        card.appendChild(tempControl);
+    }
+
+    // Fan controls
+    if (device.DeviceType === 'Fan') {
+        const fanControl = document.createElement('div');
+        fanControl.className = 'fan-control';
+        // Speed
+        const speedLabel = document.createElement('span');
+        speedLabel.textContent = 'Speed:';
+        const speedDown = document.createElement('button');
+        speedDown.className = 'fan-speed-btn';
+        speedDown.textContent = '−';
+        speedDown.title = 'Decrease Speed';
+        speedDown.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Speed > 1) device.Speed--;
+            speedValue.textContent = device.Speed;
+            notify(`${device.DeviceName} speed set to ${device.Speed}.`);
+        };
+        const speedValue = document.createElement('span');
+        speedValue.className = 'fan-speed-value';
+        speedValue.textContent = device.Speed;
+        const speedUp = document.createElement('button');
+        speedUp.className = 'fan-speed-btn';
+        speedUp.textContent = '+';
+        speedUp.title = 'Increase Speed';
+        speedUp.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Speed < 3) device.Speed++;
+            speedValue.textContent = device.Speed;
+            notify(`${device.DeviceName} speed set to ${device.Speed}.`);
+        };
+        fanControl.appendChild(speedLabel);
+        fanControl.appendChild(speedDown);
+        fanControl.appendChild(speedValue);
+        fanControl.appendChild(speedUp);
+        // Oscillation
+        const oscLabel = document.createElement('span');
+        oscLabel.textContent = 'Oscillation:';
+        const oscToggle = document.createElement('button');
+        oscToggle.className = 'fan-osc-btn';
+        oscToggle.textContent = device.Oscillation ? 'On' : 'Off';
+        oscToggle.title = 'Toggle Oscillation';
+        oscToggle.onclick = (e) => {
+            e.stopPropagation();
+            device.Oscillation = !device.Oscillation;
+            oscToggle.textContent = device.Oscillation ? 'On' : 'Off';
+            notify(`${device.DeviceName} oscillation ${device.Oscillation ? 'enabled' : 'disabled'}.`);
+        };
+        fanControl.appendChild(oscLabel);
+        fanControl.appendChild(oscToggle);
+        card.appendChild(fanControl);
+    }
+    // Speaker controls
+    if (device.DeviceType === 'Speaker') {
+        const speakerControl = document.createElement('div');
+        speakerControl.className = 'speaker-control';
+        // Volume
+        const volLabel = document.createElement('span');
+        volLabel.textContent = 'Volume:';
+        const volDown = document.createElement('button');
+        volDown.className = 'speaker-vol-btn';
+        volDown.textContent = '−';
+        volDown.title = 'Decrease Volume';
+        volDown.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Volume > 0) device.Volume--;
+            volValue.textContent = device.Volume;
+            notify(`${device.DeviceName} volume set to ${device.Volume}.`);
+        };
+        const volValue = document.createElement('span');
+        volValue.className = 'speaker-vol-value';
+        volValue.textContent = device.Volume;
+        const volUp = document.createElement('button');
+        volUp.className = 'speaker-vol-btn';
+        volUp.textContent = '+';
+        volUp.title = 'Increase Volume';
+        volUp.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Volume < 100) device.Volume++;
+            volValue.textContent = device.Volume;
+            notify(`${device.DeviceName} volume set to ${device.Volume}.`);
+        };
+        speakerControl.appendChild(volLabel);
+        speakerControl.appendChild(volDown);
+        speakerControl.appendChild(volValue);
+        speakerControl.appendChild(volUp);
+        // Mute
+        const muteBtn = document.createElement('button');
+        muteBtn.className = 'speaker-mute-btn';
+        muteBtn.textContent = device.Muted ? 'Unmute' : 'Mute';
+        muteBtn.title = device.Muted ? 'Unmute' : 'Mute';
+        muteBtn.onclick = (e) => {
+            e.stopPropagation();
+            device.Muted = !device.Muted;
+            muteBtn.textContent = device.Muted ? 'Unmute' : 'Mute';
+            muteBtn.title = device.Muted ? 'Unmute' : 'Mute';
+            notify(`${device.DeviceName} ${device.Muted ? 'muted' : 'unmuted'}.`);
+        };
+        speakerControl.appendChild(muteBtn);
+        card.appendChild(speakerControl);
+    }
+    // TV controls
+    if (device.DeviceType === 'TV') {
+        const tvControl = document.createElement('div');
+        tvControl.className = 'tv-control';
+        // Channel
+        const chLabel = document.createElement('span');
+        chLabel.textContent = 'Channel:';
+        const chDown = document.createElement('button');
+        chDown.className = 'tv-ch-btn';
+        chDown.textContent = '−';
+        chDown.title = 'Previous Channel';
+        chDown.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Channel > 1) device.Channel--;
+            chValue.textContent = device.Channel;
+            notify(`${device.DeviceName} channel set to ${device.Channel}.`);
+        };
+        const chValue = document.createElement('span');
+        chValue.className = 'tv-ch-value';
+        chValue.textContent = device.Channel;
+        const chUp = document.createElement('button');
+        chUp.className = 'tv-ch-btn';
+        chUp.textContent = '+';
+        chUp.title = 'Next Channel';
+        chUp.onclick = (e) => {
+            e.stopPropagation();
+            device.Channel++;
+            chValue.textContent = device.Channel;
+            notify(`${device.DeviceName} channel set to ${device.Channel}.`);
+        };
+        tvControl.appendChild(chLabel);
+        tvControl.appendChild(chDown);
+        tvControl.appendChild(chValue);
+        tvControl.appendChild(chUp);
+        // Volume
+        const tvVolLabel = document.createElement('span');
+        tvVolLabel.textContent = 'Volume:';
+        const tvVolDown = document.createElement('button');
+        tvVolDown.className = 'tv-vol-btn';
+        tvVolDown.textContent = '−';
+        tvVolDown.title = 'Decrease Volume';
+        tvVolDown.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Volume > 0) device.Volume--;
+            tvVolValue.textContent = device.Volume;
+            notify(`${device.DeviceName} volume set to ${device.Volume}.`);
+        };
+        const tvVolValue = document.createElement('span');
+        tvVolValue.className = 'tv-vol-value';
+        tvVolValue.textContent = device.Volume;
+        const tvVolUp = document.createElement('button');
+        tvVolUp.className = 'tv-vol-btn';
+        tvVolUp.textContent = '+';
+        tvVolUp.title = 'Increase Volume';
+        tvVolUp.onclick = (e) => {
+            e.stopPropagation();
+            if (device.Volume < 100) device.Volume++;
+            tvVolValue.textContent = device.Volume;
+            notify(`${device.DeviceName} volume set to ${device.Volume}.`);
+        };
+        tvControl.appendChild(tvVolLabel);
+        tvControl.appendChild(tvVolDown);
+        tvControl.appendChild(tvVolValue);
+        tvControl.appendChild(tvVolUp);
+        // Source
+        const srcLabel = document.createElement('span');
+        srcLabel.textContent = 'Source:';
+        const srcSelect = document.createElement('select');
+        ['HDMI1', 'HDMI2', 'AV', 'TV'].forEach(src => {
+            const opt = document.createElement('option');
+            opt.value = src;
+            opt.textContent = src;
+            if (device.Source === src) opt.selected = true;
+            srcSelect.appendChild(opt);
+        });
+        srcSelect.onchange = (e) => {
+            device.Source = e.target.value;
+            notify(`${device.DeviceName} source set to ${device.Source}.`);
+        };
+        tvControl.appendChild(srcLabel);
+        tvControl.appendChild(srcSelect);
+        card.appendChild(tvControl);
+    }
+    // Door Lock controls
+    if (device.DeviceType === 'Door Lock') {
+        const lockControl = document.createElement('div');
+        lockControl.className = 'lock-control';
+        const lockBtn = document.createElement('button');
+        lockBtn.className = 'lock-btn';
+        lockBtn.textContent = device.Locked ? 'Unlock' : 'Lock';
+        lockBtn.title = device.Locked ? 'Unlock Door' : 'Lock Door';
+        lockBtn.onclick = (e) => {
+            e.stopPropagation();
+            device.Locked = !device.Locked;
+            lockBtn.textContent = device.Locked ? 'Unlock' : 'Lock';
+            lockBtn.title = device.Locked ? 'Unlock Door' : 'Lock Door';
+            notify(`${device.DeviceName} ${device.Locked ? 'locked' : 'unlocked'}.`);
+        };
+        lockControl.appendChild(lockBtn);
+        card.appendChild(lockControl);
+    }
+    // Curtain controls
+    if (device.DeviceType === 'Curtain') {
+        const curtainControl = document.createElement('div');
+        curtainControl.className = 'curtain-control';
+        const curtainLabel = document.createElement('span');
+        curtainLabel.textContent = 'Open:';
+        const curtainSlider = document.createElement('input');
+        curtainSlider.type = 'range';
+        curtainSlider.min = 0;
+        curtainSlider.max = 100;
+        curtainSlider.value = device.Position;
+        curtainSlider.className = 'curtain-slider';
+        curtainSlider.oninput = (e) => {
+            device.Position = parseInt(e.target.value);
+            curtainValue.textContent = device.Position + '%';
+        };
+        curtainSlider.onchange = (e) => {
+            notify(`${device.DeviceName} opened to ${device.Position}%.`);
+        };
+        const curtainValue = document.createElement('span');
+        curtainValue.className = 'curtain-value';
+        curtainValue.textContent = device.Position + '%';
+        curtainControl.appendChild(curtainLabel);
+        curtainControl.appendChild(curtainSlider);
+        curtainControl.appendChild(curtainValue);
+        card.appendChild(curtainControl);
+    }
+    // Plug controls
+    if (device.DeviceType === 'Plug') {
+        const plugControl = document.createElement('div');
+        plugControl.className = 'plug-control';
+        const plugLabel = document.createElement('span');
+        plugLabel.textContent = 'Timer:';
+        const plugInput = document.createElement('input');
+        plugInput.type = 'number';
+        plugInput.min = 0;
+        plugInput.max = 120;
+        plugInput.value = device.Timer;
+        plugInput.className = 'plug-timer-input';
+        plugInput.onchange = (e) => {
+            device.Timer = parseInt(e.target.value);
+            notify(`${device.DeviceName} timer set to ${device.Timer} min.`);
+        };
+        plugControl.appendChild(plugLabel);
+        plugControl.appendChild(plugInput);
+        plugControl.appendChild(document.createTextNode('min'));
+        card.appendChild(plugControl);
+    }
+    // Remove camera live badge and just show the icon for Camera
+    if (device.DeviceType === 'Camera') {
+        // No extra controls needed, just the icon is enough
+    }
+    // Air Purifier controls
+    if (device.DeviceType === 'Air Purifier') {
+        const apControl = document.createElement('div');
+        apControl.className = 'ap-control';
+        // Fan Speed
+        const apSpeedLabel = document.createElement('span');
+        apSpeedLabel.textContent = 'Fan:';
+        const apSpeedDown = document.createElement('button');
+        apSpeedDown.className = 'ap-speed-btn';
+        apSpeedDown.textContent = '−';
+        apSpeedDown.title = 'Decrease Fan Speed';
+        apSpeedDown.onclick = (e) => {
+            e.stopPropagation();
+            if (device.FanSpeed > 1) device.FanSpeed--;
+            apSpeedValue.textContent = device.FanSpeed;
+            notify(`${device.DeviceName} fan speed set to ${device.FanSpeed}.`);
+        };
+        const apSpeedValue = document.createElement('span');
+        apSpeedValue.className = 'ap-speed-value';
+        apSpeedValue.textContent = device.FanSpeed;
+        const apSpeedUp = document.createElement('button');
+        apSpeedUp.className = 'ap-speed-btn';
+        apSpeedUp.textContent = '+';
+        apSpeedUp.title = 'Increase Fan Speed';
+        apSpeedUp.onclick = (e) => {
+            e.stopPropagation();
+            if (device.FanSpeed < 3) device.FanSpeed++;
+            apSpeedValue.textContent = device.FanSpeed;
+            notify(`${device.DeviceName} fan speed set to ${device.FanSpeed}.`);
+        };
+        apControl.appendChild(apSpeedLabel);
+        apControl.appendChild(apSpeedDown);
+        apControl.appendChild(apSpeedValue);
+        apControl.appendChild(apSpeedUp);
+        // Mode
+        const apModeLabel = document.createElement('span');
+        apModeLabel.textContent = 'Mode:';
+        const apModeSelect = document.createElement('select');
+        ['Auto', 'Sleep', 'Turbo'].forEach(mode => {
+            const opt = document.createElement('option');
+            opt.value = mode;
+            opt.textContent = mode;
+            if (device.Mode === mode) opt.selected = true;
+            apModeSelect.appendChild(opt);
+        });
+        apModeSelect.onchange = (e) => {
+            device.Mode = e.target.value;
+            notify(`${device.DeviceName} mode set to ${device.Mode}.`);
+        };
+        apControl.appendChild(apModeLabel);
+        apControl.appendChild(apModeSelect);
+        card.appendChild(apControl);
+    }
+
     // Delete button
     const deleteBtn = document.createElement('span');
     deleteBtn.className = 'device-delete-btn';
@@ -358,3 +782,16 @@ window.onload = function() {
     // In sidebar-header (settings button)
     document.querySelector('.sidebar-settings').setAttribute('title', 'Settings');
 };
+
+// Helper for notifications
+function notify(msg) {
+    const now = new Date();
+    notifications.unshift({
+        NotificationID: notifications.length + 1,
+        UserID: 1,
+        Message: msg,
+        SentTime: now.toLocaleString(),
+        Status: 'Unread'
+    });
+    renderNotificationBadge();
+}

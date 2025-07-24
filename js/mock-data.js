@@ -39,14 +39,57 @@ const deviceNames = [
   'Entryway Camera'
 ];
 
-const devices = Array.from({length: 20}, (_, i) => ({
-  DeviceID: i + 1,
-  ModuleID: (i % 20) + 1,
-  DeviceName: deviceNames[i],
-  DeviceType: ["Light", "Thermostat", "Camera", "Sensor", "Plug"][i%5],
-  Location: ["Living Room", "Bedroom", "Kitchen", "Garage", "Office"][i%5],
-  Status: ["On", "Off"][i%2]
-}));
+const devices = Array.from({length: 20}, (_, i) => {
+  const type = [
+    "Light", "Thermostat", "Camera", "Fan", "Plug",
+    "Speaker", "TV", "Door Lock", "Curtain", "Air Purifier"
+  ][i%10];
+  const device = {
+    DeviceID: i + 1,
+    ModuleID: (i % 20) + 1,
+    DeviceName: deviceNames[i % deviceNames.length],
+    DeviceType: type,
+    Location: ["Living Room", "Bedroom", "Kitchen", "Garage", "Office"][i%5],
+    Status: ["On", "Off"][i%2]
+  };
+  if (type === "Thermostat" || type === "Air Conditioner") {
+    device.Temperature = 22 + (i % 5);
+  }
+  if (type === "Light") {
+    device.Brightness = 50 + (i % 51); // 50-100
+    device.Color = "#FFD700"; // Default yellow
+  }
+  if (type === "Fan") {
+    device.Speed = 1 + (i % 3); // 1-3
+    device.Oscillation = i % 2 === 0;
+  }
+  if (type === "Speaker") {
+    device.Volume = 30 + (i % 71); // 30-100
+    device.Muted = false;
+  }
+  if (type === "TV") {
+    device.Channel = 1 + (i % 50);
+    device.Volume = 10 + (i % 41); // 10-50
+    device.Source = ["HDMI1", "HDMI2", "AV", "TV"][(i % 4)];
+  }
+  if (type === "Door Lock") {
+    device.Locked = i % 2 === 0;
+  }
+  if (type === "Curtain") {
+    device.Position = 50 + (i % 51); // 50-100 (open %)
+  }
+  if (type === "Plug") {
+    device.Timer = 0; // minutes
+  }
+  if (type === "Camera") {
+    device.Live = true;
+  }
+  if (type === "Air Purifier") {
+    device.FanSpeed = 1 + (i % 3);
+    device.Mode = ["Auto", "Sleep", "Turbo"][(i % 3)];
+  }
+  return device;
+});
 
 // Add unassigned and 'Other' devices for grouping demonstration
 devices[19].Location = null; // This will become 'Unassigned'

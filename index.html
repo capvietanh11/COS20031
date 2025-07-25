@@ -124,6 +124,59 @@
                     <ul id="location-list" style="list-style:none;padding:0;margin:0;"></ul>
                 </div>
             </section>
+            <section id="analytics-section" style="display:none;">
+                <div class="analytics-header">
+                    <h2>Analytics Dashboard</h2>
+                </div>
+                <div class="analytics-grid">
+                    <!-- Device Usage Statistics -->
+                    <div class="analytics-card">
+                        <h3>Device Usage Statistics</h3>
+                        <canvas id="device-usage-chart" height="120"></canvas>
+                        <div id="top-devices-list"></div>
+                    </div>
+                    <!-- Sensor Data Trends -->
+                    <div class="analytics-card">
+                        <h3>Sensor Data Trends</h3>
+                        <canvas id="sensor-trends-chart" height="120"></canvas>
+                    </div>
+                    <!-- Automation Rule Effectiveness -->
+                    <div class="analytics-card">
+                        <h3>Automation Rule Effectiveness</h3>
+                        <canvas id="automation-effectiveness-chart" height="120"></canvas>
+                        <div id="automation-rule-list"></div>
+                    </div>
+                    <!-- User Behavior Insights -->
+                    <div class="analytics-card">
+                        <h3>User Behavior Insights</h3>
+                        <canvas id="user-behavior-chart" height="120"></canvas>
+                        <canvas id="user-heatmap-chart" height="120"></canvas>
+                    </div>
+                    <!-- Security Access Logs -->
+                    <div class="analytics-card">
+                        <h3>Security Access Logs</h3>
+                        <canvas id="security-access-chart" height="120"></canvas>
+                        <div id="access-attempts-list"></div>
+                    </div>
+                    <!-- Device Health Trends -->
+                    <div class="analytics-card">
+                        <h3>Device Health Trends</h3>
+                        <canvas id="device-health-chart" height="120"></canvas>
+                        <div id="device-health-list"></div>
+                    </div>
+                    <!-- Event Log Summary -->
+                    <div class="analytics-card">
+                        <h3>Event Log Summary</h3>
+                        <canvas id="event-log-chart" height="120"></canvas>
+                        <div id="event-type-list"></div>
+                    </div>
+                    <!-- Schedule vs Actual Usage -->
+                    <div class="analytics-card">
+                        <h3>Schedule vs Actual Usage</h3>
+                        <canvas id="schedule-vs-actual-chart" height="120"></canvas>
+                    </div>
+                </div>
+            </section>
         </main>
         <div id="notification-popup" class="notification-popup" style="display:none;">
             <div class="notification-popup-header">
@@ -226,14 +279,15 @@
                 </form>
             </div>
         </div>
+        <!-- Device Configuration Modal for Schedule Events -->
         <div id="event-setting-modal" class="device-modal" style="display:none;">
             <div class="device-modal-content">
                 <div class="device-modal-header">
-                    <span>Configure Devices</span>
+                    <span>Configure Devices for Event</span>
                     <button id="close-event-setting-modal">✖</button>
                 </div>
                 <form id="event-setting-form">
-                    <div id="event-devices-list" style="margin-bottom:1rem;"></div>
+                    <div id="event-devices-list"></div>
                     <div class="device-modal-actions">
                         <button type="submit" id="save-event-setting-btn">Save</button>
                         <button type="button" id="cancel-event-setting-btn">Cancel</button>

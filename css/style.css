@@ -186,12 +186,14 @@ body {
     color: #2d3a4a;
     margin-bottom: 0.5rem;
     white-space: normal;
-    word-break: break-word;
-    padding-right: 48px;
     letter-spacing: 0.01em;
     max-width: 100%;
     overflow-wrap: break-word;
-    word-break: break-all;
+    word-break: break-word;
+    hyphens: auto;
+    line-height: 1.3;
+    text-align: left;
+    padding-right: 48px; /* Prevent overlap with on/off button */
 }
 .device-card .device-icon {
     font-size: 2.2rem;
@@ -395,7 +397,7 @@ body {
     opacity: 1;
 }
 /* Device controls styles */
-.temp-control, .fan-control, .speaker-control, .tv-control, .lock-control, .curtain-control, .plug-control, .ap-control, .light-brightness-control, .light-color-control {
+.temp-control, .speaker-control, .lock-control, .ap-control, .light-brightness-control, .light-color-control {
     width: 100%;
     display: flex;
     align-items: center;
@@ -406,41 +408,25 @@ body {
     flex-wrap: wrap;
     max-width: 100%;
 }
-.temp-btn, .fan-speed-btn, .speaker-vol-btn, .tv-ch-btn, .tv-vol-btn, .ap-speed-btn {
-    background: #e3eafc;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    font-size: 1.2rem;
-    color: #6a93cb;
-    cursor: pointer;
+
+/* Curtain controls: each row separated, not forced to be same size */
+.curtain-position-control {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: background 0.2s, color 0.2s;
-}
-.temp-btn:hover, .fan-speed-btn:hover, .speaker-vol-btn:hover, .tv-ch-btn:hover, .tv-vol-btn:hover, .ap-speed-btn:hover {
-    background: #6a93cb;
-    color: #fff;
-}
-.speaker-mute-btn, .lock-btn {
-    background: #e3eafc;
-    border: none;
-    border-radius: 12px;
-    padding: 0.3rem 1rem;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
     font-size: 1rem;
-    color: #6a93cb;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
-.speaker-mute-btn:hover, .lock-btn:hover {
-    background: #6a93cb;
-    color: #fff;
-}
-.curtain-slider, .light-brightness-slider {
+.curtain-slider {
+    max-width: 100px;
     width: 90px;
+    min-width: 60px;
+    box-sizing: border-box;
 }
 .curtain-value, .light-brightness-value, .fan-speed-value, .speaker-vol-value, .tv-ch-value, .tv-vol-value, .ap-speed-value {
     min-width: 36px;

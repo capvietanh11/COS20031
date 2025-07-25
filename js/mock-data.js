@@ -39,57 +39,294 @@ const deviceNames = [
   'Entryway Camera'
 ];
 
-const devices = Array.from({length: 20}, (_, i) => {
-  const type = [
-    "Light", "Thermostat", "Camera", "Fan", "Plug",
-    "Speaker", "TV", "Door Lock", "Curtain", "Air Purifier"
-  ][i%10];
-  const device = {
-    DeviceID: i + 1,
-    ModuleID: (i % 20) + 1,
-    DeviceName: deviceNames[i % deviceNames.length],
-    DeviceType: type,
-    Location: ["Living Room", "Bedroom", "Kitchen", "Garage", "Office"][i%5],
-    Status: ["On", "Off"][i%2]
-  };
-  if (type === "Thermostat" || type === "Air Conditioner") {
-    device.Temperature = 22 + (i % 5);
+// Smarter mock data for SmartHome Dashboard
+
+const devices = [
+  // 1-20: Existing, but with logical DeviceType assignments
+  {
+    DeviceID: 1,
+    ModuleID: 1,
+    DeviceName: 'Living Room Light',
+    DeviceType: 'Light',
+    Location: 'Living Room',
+    Status: 'On',
+    Brightness: 80,
+    Color: '#FFD700'
+  },
+  {
+    DeviceID: 2,
+    ModuleID: 2,
+    DeviceName: 'Bedroom Thermostat',
+    DeviceType: 'Thermostat',
+    Location: 'Bedroom',
+    Status: 'Off',
+    Temperature: 22
+  },
+  {
+    DeviceID: 3,
+    ModuleID: 3,
+    DeviceName: 'Kitchen Camera',
+    DeviceType: 'Camera',
+    Location: 'Kitchen',
+    Status: 'On',
+    Live: true
+  },
+  {
+    DeviceID: 4,
+    ModuleID: 4,
+    DeviceName: 'Garage Sensor',
+    DeviceType: 'Sensor',
+    Location: 'Garage',
+    Status: 'Off'
+  },
+  {
+    DeviceID: 5,
+    ModuleID: 5,
+    DeviceName: 'Office Plug',
+    DeviceType: 'Plug',
+    Location: 'Office',
+    Status: 'On',
+    Timer: 30
+  },
+  {
+    DeviceID: 6,
+    ModuleID: 6,
+    DeviceName: 'Hallway Light',
+    DeviceType: 'Light',
+    Location: 'Hallway',
+    Status: 'Off',
+    Brightness: 60,
+    Color: '#FFFFFF'
+  },
+  {
+    DeviceID: 7,
+    ModuleID: 7,
+    DeviceName: 'Bathroom Heater',
+    DeviceType: 'Thermostat', // Heater as Thermostat
+    Location: 'Bathroom',
+    Status: 'On',
+    Temperature: 25
+  },
+  {
+    DeviceID: 8,
+    ModuleID: 8,
+    DeviceName: 'Porch Camera',
+    DeviceType: 'Camera',
+    Location: 'Porch',
+    Status: 'On',
+    Live: true
+  },
+  {
+    DeviceID: 9,
+    ModuleID: 9,
+    DeviceName: 'Dining Room Light',
+    DeviceType: 'Light',
+    Location: 'Dining Room',
+    Status: 'On',
+    Brightness: 90,
+    Color: '#FFA500'
+  },
+  {
+    DeviceID: 10,
+    ModuleID: 10,
+    DeviceName: 'Kids Room Nightlight',
+    DeviceType: 'Light',
+    Location: 'Kids Room',
+    Status: 'Off',
+    Brightness: 20,
+    Color: '#ADD8E6'
+  },
+  {
+    DeviceID: 11,
+    ModuleID: 11,
+    DeviceName: 'Master Bedroom AC',
+    DeviceType: 'Thermostat', // AC as Thermostat
+    Location: 'Master Bedroom',
+    Status: 'On',
+    Temperature: 20
+  },
+  {
+    DeviceID: 12,
+    ModuleID: 12,
+    DeviceName: 'Guest Room Heater',
+    DeviceType: 'Thermostat', // Heater as Thermostat
+    Location: 'Guest Room',
+    Status: 'Off',
+    Temperature: 23
+  },
+  {
+    DeviceID: 13,
+    ModuleID: 13,
+    DeviceName: 'Laundry Room Plug',
+    DeviceType: 'Plug',
+    Location: 'Laundry Room',
+    Status: 'On',
+    Timer: 45
+  },
+  {
+    DeviceID: 14,
+    ModuleID: 14,
+    DeviceName: 'Backyard Sensor',
+    DeviceType: 'Sensor',
+    Location: 'Backyard',
+    Status: 'Off'
+  },
+  {
+    DeviceID: 15,
+    ModuleID: 15,
+    DeviceName: 'Garage Door Controller',
+    DeviceType: 'Door Lock',
+    Location: 'Garage',
+    Status: 'On',
+    Locked: true
+  },
+  {
+    DeviceID: 16,
+    ModuleID: 16,
+    DeviceName: 'Living Room Speaker',
+    DeviceType: 'Speaker',
+    Location: 'Living Room',
+    Status: 'Off',
+    Volume: 50,
+    Muted: false
+  },
+  {
+    DeviceID: 17,
+    ModuleID: 17,
+    DeviceName: 'Bedroom Lamp',
+    DeviceType: 'Light',
+    Location: 'Bedroom',
+    Status: 'On',
+    Brightness: 70,
+    Color: '#FFFACD'
+  },
+  {
+    DeviceID: 18,
+    ModuleID: 18,
+    DeviceName: 'Kitchen Plug',
+    DeviceType: 'Plug',
+    Location: 'Kitchen',
+    Status: 'Off',
+    Timer: 0
+  },
+  {
+    DeviceID: 19,
+    ModuleID: 19,
+    DeviceName: 'Office Thermostat',
+    DeviceType: 'Thermostat',
+    Location: 'Office',
+    Status: 'On',
+    Temperature: 24
+  },
+  {
+    DeviceID: 20,
+    ModuleID: 20,
+    DeviceName: 'Entryway Camera',
+    DeviceType: 'Camera',
+    Location: 'Entryway',
+    Status: 'On',
+    Live: true
+  },
+  // 21-30: 10 more realistic devices
+  {
+    DeviceID: 21,
+    ModuleID: 21,
+    DeviceName: 'Garage Fan',
+    DeviceType: 'Fan',
+    Location: 'Garage',
+    Status: 'On',
+    Speed: 2,
+    Oscillation: true
+  },
+  {
+    DeviceID: 22,
+    ModuleID: 22,
+    DeviceName: 'Porch Light',
+    DeviceType: 'Light',
+    Location: 'Porch',
+    Status: 'Off',
+    Brightness: 40,
+    Color: '#FFF8DC'
+  },
+  {
+    DeviceID: 23,
+    ModuleID: 23,
+    DeviceName: 'Dining Room Speaker',
+    DeviceType: 'Speaker',
+    Location: 'Dining Room',
+    Status: 'On',
+    Volume: 35,
+    Muted: false
+  },
+  {
+    DeviceID: 24,
+    ModuleID: 24,
+    DeviceName: 'Backyard Camera',
+    DeviceType: 'Camera',
+    Location: 'Backyard',
+    Status: 'On',
+    Live: true
+  },
+  {
+    DeviceID: 25,
+    ModuleID: 25,
+    DeviceName: 'Living Room TV',
+    DeviceType: 'TV',
+    Location: 'Living Room',
+    Status: 'Off',
+    Channel: 5,
+    Volume: 20,
+    Source: 'HDMI1'
+  },
+  {
+    DeviceID: 26,
+    ModuleID: 26,
+    DeviceName: 'Bedroom Curtain',
+    DeviceType: 'Curtain',
+    Location: 'Bedroom',
+    Status: 'On',
+    Position: 80
+  },
+  {
+    DeviceID: 27,
+    ModuleID: 27,
+    DeviceName: 'Office Air Purifier',
+    DeviceType: 'Air Purifier',
+    Location: 'Office',
+    Status: 'On',
+    FanSpeed: 2,
+    Mode: 'Auto'
+  },
+  {
+    DeviceID: 28,
+    ModuleID: 28,
+    DeviceName: 'Kitchen Door Lock',
+    DeviceType: 'Door Lock',
+    Location: 'Kitchen',
+    Status: 'Off',
+    Locked: false
+  },
+  {
+    DeviceID: 29,
+    ModuleID: 29,
+    DeviceName: 'Laundry Room TV',
+    DeviceType: 'TV',
+    Location: 'Laundry Room',
+    Status: 'On',
+    Channel: 12,
+    Volume: 15,
+    Source: 'AV'
+  },
+  {
+    DeviceID: 30,
+    ModuleID: 30,
+    DeviceName: 'Entryway Plug',
+    DeviceType: 'Plug',
+    Location: 'Entryway',
+    Status: 'Off',
+    Timer: 10
   }
-  if (type === "Light") {
-    device.Brightness = 50 + (i % 51); // 50-100
-    device.Color = "#FFD700"; // Default yellow
-  }
-  if (type === "Fan") {
-    device.Speed = 1 + (i % 3); // 1-3
-    device.Oscillation = i % 2 === 0;
-  }
-  if (type === "Speaker") {
-    device.Volume = 30 + (i % 71); // 30-100
-    device.Muted = false;
-  }
-  if (type === "TV") {
-    device.Channel = 1 + (i % 50);
-    device.Volume = 10 + (i % 41); // 10-50
-    device.Source = ["HDMI1", "HDMI2", "AV", "TV"][(i % 4)];
-  }
-  if (type === "Door Lock") {
-    device.Locked = i % 2 === 0;
-  }
-  if (type === "Curtain") {
-    device.Position = 50 + (i % 51); // 50-100 (open %)
-  }
-  if (type === "Plug") {
-    device.Timer = 0; // minutes
-  }
-  if (type === "Camera") {
-    device.Live = true;
-  }
-  if (type === "Air Purifier") {
-    device.FanSpeed = 1 + (i % 3);
-    device.Mode = ["Auto", "Sleep", "Turbo"][(i % 3)];
-  }
-  return device;
-});
+];
 
 // Add unassigned and 'Other' devices for grouping demonstration
 devices[19].Location = null; // This will become 'Unassigned'
@@ -124,18 +361,225 @@ const notifications = Array.from({length: 20}, (_, i) => ({
   Status: ["Unread", "Read"][i%2]
 }));
 
-const sensorData = Array.from({length: 20}, (_, i) => ({
-  SensorDataID: i + 1,
-  DeviceID: (i % 20) + 1,
-  CreatedAt: `2024-06-${(i%30+1).toString().padStart(2, '0')}T0${i%10}:20:00Z`,
-  Values: [
-    `Brightness: ${50 + i}%`,
-    `Temperature: ${20 + i}C`,
-    `Motion: ${i%2 === 0 ? "Detected" : "None"}`,
-    `Power: ${100 - i}W`
-  ][i%4],
-  Type: ["Light", "Thermostat", "Sensor", "Plug"][i%4]
-}));
+// Sensor data for devices that can detect (Camera, Sensor, etc.)
+const sensorData = [
+  // Kitchen Camera (DeviceID: 3)
+  {
+    SensorDataID: 1,
+    DeviceID: 3,
+    CreatedAt: '2024-06-01T08:20:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 2,
+    DeviceID: 3,
+    CreatedAt: '2024-06-01T09:20:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 3,
+    DeviceID: 3,
+    CreatedAt: '2024-06-01T10:20:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 4,
+    DeviceID: 3,
+    CreatedAt: '2024-06-01T11:20:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 5,
+    DeviceID: 3,
+    CreatedAt: '2024-06-01T12:20:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  // Porch Camera (DeviceID: 8)
+  {
+    SensorDataID: 6,
+    DeviceID: 8,
+    CreatedAt: '2024-06-01T08:30:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 7,
+    DeviceID: 8,
+    CreatedAt: '2024-06-01T09:30:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 8,
+    DeviceID: 8,
+    CreatedAt: '2024-06-01T10:30:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 9,
+    DeviceID: 8,
+    CreatedAt: '2024-06-01T11:30:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 10,
+    DeviceID: 8,
+    CreatedAt: '2024-06-01T12:30:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  // Entryway Camera (DeviceID: 20)
+  {
+    SensorDataID: 11,
+    DeviceID: 20,
+    CreatedAt: '2024-06-01T08:40:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 12,
+    DeviceID: 20,
+    CreatedAt: '2024-06-01T09:40:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 13,
+    DeviceID: 20,
+    CreatedAt: '2024-06-01T10:40:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 14,
+    DeviceID: 20,
+    CreatedAt: '2024-06-01T11:40:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 15,
+    DeviceID: 20,
+    CreatedAt: '2024-06-01T12:40:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  // Backyard Camera (DeviceID: 24)
+  {
+    SensorDataID: 16,
+    DeviceID: 24,
+    CreatedAt: '2024-06-01T08:50:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 17,
+    DeviceID: 24,
+    CreatedAt: '2024-06-01T09:50:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 18,
+    DeviceID: 24,
+    CreatedAt: '2024-06-01T10:50:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 19,
+    DeviceID: 24,
+    CreatedAt: '2024-06-01T11:50:00Z',
+    Values: 'Motion: None',
+    Type: 'Camera'
+  },
+  {
+    SensorDataID: 20,
+    DeviceID: 24,
+    CreatedAt: '2024-06-01T12:50:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Camera'
+  },
+  // Garage Sensor (DeviceID: 4)
+  {
+    SensorDataID: 21,
+    DeviceID: 4,
+    CreatedAt: '2024-06-01T08:25:00Z',
+    Values: 'Temperature: 21C',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 22,
+    DeviceID: 4,
+    CreatedAt: '2024-06-01T09:25:00Z',
+    Values: 'Motion: None',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 23,
+    DeviceID: 4,
+    CreatedAt: '2024-06-01T10:25:00Z',
+    Values: 'Temperature: 22C',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 24,
+    DeviceID: 4,
+    CreatedAt: '2024-06-01T11:25:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 25,
+    DeviceID: 4,
+    CreatedAt: '2024-06-01T12:25:00Z',
+    Values: 'Temperature: 23C',
+    Type: 'Sensor'
+  },
+  // Backyard Sensor (DeviceID: 14)
+  {
+    SensorDataID: 26,
+    DeviceID: 14,
+    CreatedAt: '2024-06-01T08:55:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 27,
+    DeviceID: 14,
+    CreatedAt: '2024-06-01T09:55:00Z',
+    Values: 'Temperature: 19C',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 28,
+    DeviceID: 14,
+    CreatedAt: '2024-06-01T10:55:00Z',
+    Values: 'Motion: None',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 29,
+    DeviceID: 14,
+    CreatedAt: '2024-06-01T11:55:00Z',
+    Values: 'Temperature: 20C',
+    Type: 'Sensor'
+  },
+  {
+    SensorDataID: 30,
+    DeviceID: 14,
+    CreatedAt: '2024-06-01T12:55:00Z',
+    Values: 'Motion: Detected',
+    Type: 'Sensor'
+  }
+];
 
 const deviceStatuses = Array.from({length: 20}, (_, i) => ({
   StatusID: i + 1,

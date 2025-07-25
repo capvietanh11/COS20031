@@ -10,8 +10,15 @@
     <div class="container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <img src="assets/logo.png" alt="Logo" class="sidebar-logo-img" />
+                <img src="assets/logo1.png" alt="Logo" class="sidebar-logo-img" />
                 <button class="sidebar-settings">⚙️</button>
+            </div>
+            <div class="sidebar-location-select" style="padding: 0 1.5rem 1rem 1.5rem;">
+                <select id="system-location-dropdown" style="width:100%;padding:0.5rem 1rem;border-radius:8px;font-size:1rem;">
+                    <option value="home">Your Home</option>
+                    <option value="parent">Your Parent Home</option>
+                    <option value="office">Your Office</option>
+                </select>
             </div>
             <nav class="sidebar-nav">
                 <ul>
@@ -81,6 +88,40 @@
                         <h3>Recent Activity Log</h3>
                         <ul id="dashboard-activity-list" style="overflow-y:auto;max-height:220px;padding-left:1rem;"></ul>
                     </div>
+                </div>
+            </section>
+            <section id="settings-section" style="display:none;">
+                <div class="main-header">
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-content" style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:2rem;max-width:500px;margin:2rem auto;">
+                    <h3>User Information</h3>
+                    <div id="user-info-fields">
+                        <div style="margin-bottom:1rem;"><b>Username:</b> <span id="user-info-username"></span></div>
+                        <div style="margin-bottom:1rem;"><b>Email:</b> <span id="user-info-email"></span></div>
+                        <div style="margin-bottom:1rem;"><b>Phone Number:</b> <span id="user-info-phone"></span></div>
+                        <div style="margin-bottom:1rem;"><b>Role:</b> <span id="user-info-role"></span></div>
+                    </div>
+                    <hr style="margin:2rem 0;" />
+                    <h3>App Settings</h3>
+                    <form id="app-settings-form">
+                        <label style="display:block;margin-bottom:1rem;">
+                            Theme:
+                            <select id="app-theme" style="width:100%;padding:0.5rem;margin-top:0.3rem;">
+                                <option value="green">Green (Default)</option>
+                                <option value="blue">Blue</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </label>
+                        <button type="submit" style="background:#56ab2f;color:#fff;padding:0.6rem 1.5rem;border:none;border-radius:8px;font-size:1rem;">Save</button>
+                    </form>
+                    <hr style="margin:2rem 0;" />
+                    <h3>Manage Locations</h3>
+                    <form id="add-location-form" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+                        <input type="text" id="new-location-input" placeholder="New Location Name" style="flex:1;padding:0.5rem;border-radius:8px;border:1px solid #dbe3ef;" />
+                        <button type="submit" style="background:#56ab2f;color:#fff;padding:0.5rem 1.2rem;border:none;border-radius:8px;font-size:1rem;">Add</button>
+                    </form>
+                    <ul id="location-list" style="list-style:none;padding:0;margin:0;"></ul>
                 </div>
             </section>
         </main>

@@ -390,7 +390,10 @@ function createDeviceCard(device, filterRoom) {
         speakerControl.appendChild(volDown);
         speakerControl.appendChild(volValue);
         speakerControl.appendChild(volUp);
-        // Mute
+        card.appendChild(speakerControl);
+        // Mute (on new line)
+        const muteRow = document.createElement('div');
+        muteRow.style.marginTop = '0.5rem';
         const muteBtn = document.createElement('button');
         muteBtn.className = 'speaker-mute-btn';
         muteBtn.textContent = device.Muted ? 'Unmute' : 'Mute';
@@ -402,8 +405,8 @@ function createDeviceCard(device, filterRoom) {
             muteBtn.title = device.Muted ? 'Unmute' : 'Mute';
             notify(`${device.DeviceName} ${device.Muted ? 'muted' : 'unmuted'}.`);
         };
-        speakerControl.appendChild(muteBtn);
-        card.appendChild(speakerControl);
+        muteRow.appendChild(muteBtn);
+        card.appendChild(muteRow);
     }
     // TV controls
     if (device.DeviceType === 'TV') {
@@ -861,11 +864,40 @@ document.getElementById('cancel-event-btn').onclick = function(e) {
     document.getElementById('add-event-modal').style.display = 'none';
 };
 
-// Hide schedule section by default on load
+// --- Manage Locations logic ---
+let locations = ["Your Home", "Your Parent Home", "Your Office"];
+function renderLocationList() {
+    const list = document.getElementById('location-list');
+    if (!list) return;
+    list.innerHTML = '';
+    locations.forEach(loc => {
+        const li = document.createElement('li');
+        li.textContent = loc;
+        li.style.padding = '0.4rem 0';
+        list.appendChild(li);
+    });
+}
+window.renderLocationList = renderLocationList;
+
 window.onload = (function(orig) {
     return function() {
         orig && orig();
         document.getElementById('schedule-section').style.display = 'none';
+        renderLocationList();
+        // Add location form logic
+        const addLocForm = document.getElementById('add-location-form');
+        if (addLocForm) {
+            addLocForm.onsubmit = function(e) {
+                e.preventDefault();
+                const input = document.getElementById('new-location-input');
+                const val = input.value.trim();
+                if (val && !locations.includes(val)) {
+                    locations.push(val);
+                    renderLocationList();
+                    input.value = '';
+                }
+            };
+        }
     };
 })(window.onload);
 
@@ -946,6 +978,57 @@ window.onload = function() {
     });
     // In sidebar-header (settings button)
     document.querySelector('.sidebar-settings').setAttribute('title', 'Settings');
+    document.querySelector('.sidebar-settings').onclick = function() {
+        document.getElementById('settings-section').style.display = '';
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('device-groups').style.display = 'none';
+        document.getElementById('schedule-section').style.display = 'none';
+        document.querySelector('.tab-nav').style.display = 'none';
+        document.getElementById('main-header-title').textContent = 'Settings';
+        document.querySelector('.main-header-actions').style.display = 'none';
+        document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+        // Fill user info fields
+        if (window.currentUser) {
+            document.getElementById('user-info-username').textContent = window.currentUser.Username;
+            document.getElementById('user-info-email').textContent = window.currentUser.Email;
+            document.getElementById('user-info-phone').textContent = window.currentUser.PhoneNumber;
+            document.getElementById('user-info-role').textContent = window.currentUser.Role;
+        }
+    };
+    // Hide settings section when switching to other main tabs
+    document.querySelectorAll('.sidebar-nav li')[0].onclick = function() {
+        document.getElementById('settings-section').style.display = 'none';
+        document.getElementById('device-groups').style.display = 'none';
+        document.getElementById('schedule-section').style.display = 'none';
+        document.getElementById('dashboard-section').style.display = '';
+        document.querySelector('.tab-nav').style.display = 'none';
+        document.getElementById('main-header-title').textContent = 'Dashboard';
+        document.querySelector('.main-header-actions').style.display = 'none';
+        document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+        document.querySelectorAll('.sidebar-nav li')[0].classList.add('active');
+        renderDashboard();
+    };
+    document.querySelectorAll('.sidebar-nav li')[1].onclick = function() {
+        document.getElementById('settings-section').style.display = 'none';
+        document.getElementById('schedule-section').style.display = 'none';
+        document.getElementById('device-groups').style.display = '';
+        document.querySelector('.tab-nav').style.display = '';
+        document.getElementById('main-header-title').textContent = 'Devices';
+        document.querySelector('.main-header-actions').style.display = '';
+        document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+        document.querySelectorAll('.sidebar-nav li')[1].classList.add('active');
+    };
+    document.getElementById('schedule-tab').onclick = function() {
+        document.getElementById('settings-section').style.display = 'none';
+        document.getElementById('device-groups').style.display = 'none';
+        document.getElementById('schedule-section').style.display = '';
+        document.querySelector('.tab-nav').style.display = 'none';
+        document.getElementById('main-header-title').textContent = 'Schedule';
+        document.querySelector('.main-header-actions').style.display = 'none';
+        renderSchedule();
+        document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+        document.getElementById('schedule-tab').classList.add('active');
+    };
 };
 
 // Helper for notifications
@@ -1132,3 +1215,7 @@ function showSensorDataModal(deviceId) {
         modal.style.display = 'none';
     };
 }
+
+// Ensure currentUser and users are available globally for settings page
+if (typeof currentUser !== 'undefined') window.currentUser = currentUser;
+if (typeof users !== 'undefined') window.users = users;

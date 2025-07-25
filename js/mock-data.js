@@ -1,13 +1,31 @@
 // Mock data for SmartHome Dashboard based on provided schema
 
-const users = Array.from({length: 20}, (_, i) => ({
-  UserID: i + 1,
-  Username: `user${i+1}`,
-  Password: `pass${i+1}`,
-  Email: `user${i+1}@example.com`,
-  PhoneNumber: `555-010${(i+1).toString().padStart(2, '0')}`,
-  Role: i === 0 ? "Admin" : "User"
-}));
+// Smarter users mock data
+const users = [
+  {
+    UserID: 1,
+    Username: 'alice',
+    Email: 'alice@example.com',
+    PhoneNumber: '555-01001',
+    Role: 'Admin'
+  },
+  {
+    UserID: 2,
+    Username: 'bob',
+    Email: 'bob@example.com',
+    PhoneNumber: '555-01002',
+    Role: 'User'
+  },
+  {
+    UserID: 3,
+    Username: 'carol',
+    Email: 'carol@example.com',
+    PhoneNumber: '555-01003',
+    Role: 'User'
+  }
+];
+// Default current user (first user)
+let currentUser = users[0];
 
 const modules = Array.from({length: 20}, (_, i) => ({
   ModuleID: i + 1,

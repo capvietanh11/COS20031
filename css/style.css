@@ -604,3 +604,77 @@ body {
 .dashboard-activity-log li:last-child {
     margin-bottom: 0;
 }
+.sidebar-location-select {
+    padding: 0 1.5rem 1rem 1.5rem;
+}
+#system-location-dropdown {
+    width: 100%;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-size: 1.08rem;
+    border: none;
+    background: linear-gradient(90deg, #a8e063 0%, #56ab2f 100%);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(88, 175, 104, 0.10);
+    margin-bottom: 0.5rem;
+    outline: none;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+#system-location-dropdown:focus {
+    box-shadow: 0 4px 16px rgba(88, 175, 104, 0.18);
+    background: linear-gradient(90deg, #56ab2f 0%, #a8e063 100%);
+}
+#system-location-dropdown option {
+    color: #222;
+    background: #fff;
+}
+
+.analytics-header {
+    margin-bottom: 2rem;
+}
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+.analytics-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1.5rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 320px;
+}
+.analytics-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+}
+#top-devices-list, #automation-rule-list, #access-attempts-list, #device-health-list, #event-type-list {
+    font-size: 0.97rem;
+    margin-top: 0.5rem;
+}
+#event-devices-list {
+    margin-bottom: 1rem;
+    max-height: 48vh;   /* Limit device list height */
+    overflow-y: auto;   /* Enable vertical scroll */
+    width: 100%;
+    padding-right: 6px; /* Space for scrollbar */
+}
+.event-device-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.7rem;
+    gap: 1rem;
+}
+.event-device-row label {
+    flex: 1;
+    font-weight: 500;
+}
+.event-device-row select, .event-device-row input[type="range"] {
+    min-width: 80px;
+}

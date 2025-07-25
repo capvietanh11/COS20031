@@ -819,17 +819,49 @@ document.getElementById('schedule-tab').onclick = function() {
     document.getElementById('schedule-tab').classList.add('active');
 };
 
-// Example for Devices tab
+// Devices Tab
 document.querySelectorAll('.sidebar-nav li')[1].onclick = function() {
-    document.getElementById('schedule-section').style.display = 'none';
-    document.getElementById('device-groups').style.display = '';
-    document.getElementById('dashboard-section').style.display = 'none';
-    document.getElementById('analytics-section').style.display = 'none'; // <-- Add this line
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('device-groups').style.display = ''; // Show Devices tab
     document.querySelector('.tab-nav').style.display = ''; // Show room tabs
-    document.getElementById('main-header-title').textContent = 'Devices'; // Set heading
+    document.getElementById('main-header-title').textContent = 'Devices';
     document.querySelector('.main-header-actions').style.display = ''; // Show search
     document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
     document.querySelectorAll('.sidebar-nav li')[1].classList.add('active');
+};
+
+// Dashboard Tab
+document.querySelectorAll('.sidebar-nav li')[0].onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('dashboard-section').style.display = ''; // Show Dashboard tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Dashboard';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav li')[0].classList.add('active');
+    renderDashboard();
+};
+
+// Analytics Tab
+document.querySelectorAll('.sidebar-nav li')[3].onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('analytics-section').style.display = ''; // Show Analytics tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Analytics';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav li')[3].classList.add('active');
+    renderAnalyticsDashboard();
+};
+
+// Settings Tab
+document.querySelector('.sidebar-settings').onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('settings-section').style.display = ''; // Show Settings tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Settings';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
 };
 
 // Add Event Modal logic
@@ -895,15 +927,17 @@ window.onload = (function(orig) {
 
 // On load
 window.onload = function() {
+    hideAllTabs(); // Hide all tabs on page load
+    document.getElementById('dashboard-section').style.display = ''; // Default tab: dashboard
     const rooms = getRooms(devices);
     renderRoomTabs(rooms);
     renderDeviceGroups('all', '');
+    renderNotificationBadge();
     // Add search event
     const searchInput = document.querySelector('.search-input');
     searchInput.addEventListener('input', function(e) {
         renderDeviceGroups(currentRoom, e.target.value);
     });
-    renderNotificationBadge();
     // Bell click
     document.getElementById('notification-bell').onclick = function() {
         renderNotificationPopup();
@@ -978,7 +1012,6 @@ window.onload = function() {
         document.querySelector('.tab-nav').style.display = 'none';
         document.getElementById('main-header-title').textContent = 'Settings';
         document.querySelector('.main-header-actions').style.display = 'none';
-        document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
         // Fill user info fields
         if (window.currentUser) {
             document.getElementById('user-info-username').textContent = window.currentUser.Username;
@@ -1470,3 +1503,69 @@ function showSensorDataModal(deviceId) {
 // Ensure currentUser and users are available globally for settings page
 if (typeof currentUser !== 'undefined') window.currentUser = currentUser;
 if (typeof users !== 'undefined') window.users = users;
+
+// Helper function: Hide all tabs
+function hideAllTabs() {
+    document.getElementById('device-groups').style.display = 'none';
+    document.getElementById('schedule-section').style.display = 'none';
+    document.getElementById('dashboard-section').style.display = 'none';
+    document.getElementById('analytics-section').style.display = 'none';
+    document.getElementById('settings-section').style.display = 'none';
+}
+
+// Devices Tab
+document.querySelectorAll('.sidebar-nav li')[1].onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('device-groups').style.display = ''; // Show Devices tab
+    document.querySelector('.tab-nav').style.display = ''; // Show room tabs
+    document.getElementById('main-header-title').textContent = 'Devices';
+    document.querySelector('.main-header-actions').style.display = ''; // Show search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav li')[1].classList.add('active');
+};
+
+// Schedule Tab
+document.getElementById('schedule-tab').onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('schedule-section').style.display = ''; // Show Schedule tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Schedule';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    renderSchedule();
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.getElementById('schedule-tab').classList.add('active');
+};
+
+// Dashboard Tab
+document.querySelectorAll('.sidebar-nav li')[0].onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('dashboard-section').style.display = ''; // Show Dashboard tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Dashboard';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav li')[0].classList.add('active');
+    renderDashboard();
+};
+
+// Analytics Tab
+document.querySelectorAll('.sidebar-nav li')[3].onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('analytics-section').style.display = ''; // Show Analytics tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Analytics';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav li')[3].classList.add('active');
+    renderAnalyticsDashboard();
+};
+
+// Settings Tab
+document.querySelector('.sidebar-settings').onclick = function() {
+    hideAllTabs(); // Hide all tabs
+    document.getElementById('settings-section').style.display = ''; // Show Settings tab
+    document.querySelector('.tab-nav').style.display = 'none'; // Hide room tabs
+    document.getElementById('main-header-title').textContent = 'Settings';
+    document.querySelector('.main-header-actions').style.display = 'none'; // Hide search
+    document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+};

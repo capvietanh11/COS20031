@@ -69,7 +69,8 @@ const devices = [
     Location: 'Living Room',
     Status: 'On',
     Brightness: 80,
-    Color: '#FFD700'
+    Color: '#FFD700',
+    EnergyUsage: 12.5 // kWh per day
   },
   {
     DeviceID: 2,
@@ -78,7 +79,8 @@ const devices = [
     DeviceType: 'Thermostat',
     Location: 'Bedroom',
     Status: 'Off',
-    Temperature: 22
+    Temperature: 22,
+    EnergyUsage: 8.2 // kWh per day
   },
   {
     DeviceID: 3,
@@ -87,7 +89,8 @@ const devices = [
     DeviceType: 'Camera',
     Location: 'Kitchen',
     Status: 'On',
-    Live: true
+    Live: true,
+    EnergyUsage: 2.1 // kWh per day
   },
   {
     DeviceID: 4,
@@ -95,7 +98,8 @@ const devices = [
     DeviceName: 'Garage Sensor',
     DeviceType: 'Sensor',
     Location: 'Garage',
-    Status: 'Off'
+    Status: 'Off',
+    EnergyUsage: 0.8 // kWh per day
   },
   {
     DeviceID: 5,
@@ -104,7 +108,8 @@ const devices = [
     DeviceType: 'Plug',
     Location: 'Office',
     Status: 'On',
-    Timer: 30
+    Timer: 30,
+    EnergyUsage: 15.3 // kWh per day
   },
   {
     DeviceID: 6,
@@ -114,7 +119,8 @@ const devices = [
     Location: 'Hallway',
     Status: 'Off',
     Brightness: 60,
-    Color: '#FFFFFF'
+    Color: '#FFFFFF',
+    EnergyUsage: 9.8 // kWh per day
   },
   {
     DeviceID: 7,
@@ -123,7 +129,8 @@ const devices = [
     DeviceType: 'Thermostat', // Heater as Thermostat
     Location: 'Bathroom',
     Status: 'On',
-    Temperature: 25
+    Temperature: 25,
+    EnergyUsage: 18.7 // kWh per day
   },
   {
     DeviceID: 8,
@@ -132,7 +139,8 @@ const devices = [
     DeviceType: 'Camera',
     Location: 'Porch',
     Status: 'On',
-    Live: true
+    Live: true,
+    EnergyUsage: 2.4 // kWh per day
   },
   {
     DeviceID: 9,
@@ -142,7 +150,8 @@ const devices = [
     Location: 'Dining Room',
     Status: 'On',
     Brightness: 90,
-    Color: '#FFA500'
+    Color: '#FFA500',
+    EnergyUsage: 14.2 // kWh per day
   },
   {
     DeviceID: 10,
@@ -152,7 +161,8 @@ const devices = [
     Location: 'Kids Room',
     Status: 'Off',
     Brightness: 20,
-    Color: '#ADD8E6'
+    Color: '#ADD8E6',
+    EnergyUsage: 3.5 // kWh per day
   },
   {
     DeviceID: 11,
@@ -161,7 +171,8 @@ const devices = [
     DeviceType: 'Thermostat', // AC as Thermostat
     Location: 'Master Bedroom',
     Status: 'On',
-    Temperature: 20
+    Temperature: 20,
+    EnergyUsage: 25.6 // kWh per day
   },
   {
     DeviceID: 12,
@@ -170,7 +181,8 @@ const devices = [
     DeviceType: 'Thermostat', // Heater as Thermostat
     Location: 'Guest Room',
     Status: 'Off',
-    Temperature: 23
+    Temperature: 23,
+    EnergyUsage: 16.8 // kWh per day
   },
   {
     DeviceID: 13,
@@ -179,7 +191,8 @@ const devices = [
     DeviceType: 'Plug',
     Location: 'Laundry Room',
     Status: 'On',
-    Timer: 45
+    Timer: 45,
+    EnergyUsage: 22.4 // kWh per day
   },
   {
     DeviceID: 14,
@@ -187,7 +200,8 @@ const devices = [
     DeviceName: 'Backyard Sensor',
     DeviceType: 'Sensor',
     Location: 'Backyard',
-    Status: 'Off'
+    Status: 'Off',
+    EnergyUsage: 1.2 // kWh per day
   },
   {
     DeviceID: 15,
@@ -196,7 +210,8 @@ const devices = [
     DeviceType: 'Door Lock',
     Location: 'Garage',
     Status: 'On',
-    Locked: true
+    Locked: true,
+    EnergyUsage: 1.8 // kWh per day
   },
   {
     DeviceID: 16,
@@ -206,7 +221,8 @@ const devices = [
     Location: 'Living Room',
     Status: 'Off',
     Volume: 50,
-    Muted: false
+    Muted: false,
+    EnergyUsage: 4.7 // kWh per day
   },
   {
     DeviceID: 17,
@@ -216,7 +232,8 @@ const devices = [
     Location: 'Bedroom',
     Status: 'On',
     Brightness: 70,
-    Color: '#FFFACD'
+    Color: '#FFFACD',
+    EnergyUsage: 11.3 // kWh per day
   },
   {
     DeviceID: 18,
@@ -225,7 +242,8 @@ const devices = [
     DeviceType: 'Plug',
     Location: 'Kitchen',
     Status: 'Off',
-    Timer: 0
+    Timer: 0,
+    EnergyUsage: 19.1 // kWh per day
   },
   {
     DeviceID: 19,
@@ -234,7 +252,8 @@ const devices = [
     DeviceType: 'Thermostat',
     Location: 'Office',
     Status: 'On',
-    Temperature: 24
+    Temperature: 24,
+    EnergyUsage: 12.9 // kWh per day
   },
   {
     DeviceID: 20,
@@ -243,7 +262,8 @@ const devices = [
     DeviceType: 'Camera',
     Location: 'Entryway',
     Status: 'On',
-    Live: true
+    Live: true,
+    EnergyUsage: 2.6 // kWh per day
   },
   // 21-30: 10 more realistic devices
   {
@@ -254,7 +274,8 @@ const devices = [
     Location: 'Garage',
     Status: 'On',
     Speed: 2,
-    Oscillation: true
+    Oscillation: true,
+    EnergyUsage: 6.4 // kWh per day
   },
   {
     DeviceID: 22,
@@ -264,7 +285,8 @@ const devices = [
     Location: 'Porch',
     Status: 'Off',
     Brightness: 40,
-    Color: '#FFF8DC'
+    Color: '#FFF8DC',
+    EnergyUsage: 7.9 // kWh per day
   },
   {
     DeviceID: 23,
@@ -274,7 +296,8 @@ const devices = [
     Location: 'Dining Room',
     Status: 'On',
     Volume: 35,
-    Muted: false
+    Muted: false,
+    EnergyUsage: 3.8 // kWh per day
   },
   {
     DeviceID: 24,
@@ -283,7 +306,8 @@ const devices = [
     DeviceType: 'Camera',
     Location: 'Backyard',
     Status: 'On',
-    Live: true
+    Live: true,
+    EnergyUsage: 2.3 // kWh per day
   },
   {
     DeviceID: 25,
@@ -294,7 +318,8 @@ const devices = [
     Status: 'Off',
     Channel: 5,
     Volume: 20,
-    Source: 'HDMI1'
+    Source: 'HDMI1',
+    EnergyUsage: 8.9 // kWh per day
   },
   {
     DeviceID: 26,
@@ -303,7 +328,8 @@ const devices = [
     DeviceType: 'Curtain',
     Location: 'Bedroom',
     Status: 'On',
-    Position: 80
+    Position: 80,
+    EnergyUsage: 0.5 // kWh per day
   },
   {
     DeviceID: 27,
@@ -313,7 +339,8 @@ const devices = [
     Location: 'Office',
     Status: 'On',
     FanSpeed: 2,
-    Mode: 'Auto'
+    Mode: 'Auto',
+    EnergyUsage: 5.2 // kWh per day
   },
   {
     DeviceID: 28,
@@ -322,7 +349,8 @@ const devices = [
     DeviceType: 'Door Lock',
     Location: 'Kitchen',
     Status: 'Off',
-    Locked: false
+    Locked: false,
+    EnergyUsage: 1.5 // kWh per day
   },
   {
     DeviceID: 29,
@@ -333,7 +361,8 @@ const devices = [
     Status: 'On',
     Channel: 12,
     Volume: 15,
-    Source: 'AV'
+    Source: 'AV',
+    EnergyUsage: 6.7 // kWh per day
   },
   {
     DeviceID: 30,
@@ -342,7 +371,8 @@ const devices = [
     DeviceType: 'Plug',
     Location: 'Entryway',
     Status: 'Off',
-    Timer: 10
+    Timer: 10,
+    EnergyUsage: 13.6 // kWh per day
   }
 ];
 

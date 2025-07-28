@@ -1005,13 +1005,22 @@ window.onload = function() {
     // In sidebar-header (settings button)
     document.querySelector('.sidebar-settings').setAttribute('title', 'Settings');
     document.querySelector('.sidebar-settings').onclick = function() {
-        document.getElementById('settings-section').style.display = '';
+        // Hide all sections first
         document.getElementById('dashboard-section').style.display = 'none';
         document.getElementById('device-groups').style.display = 'none';
         document.getElementById('schedule-section').style.display = 'none';
+        document.getElementById('analytics-section').style.display = 'none';
         document.querySelector('.tab-nav').style.display = 'none';
-        document.getElementById('main-header-title').textContent = 'Settings';
         document.querySelector('.main-header-actions').style.display = 'none';
+        
+        // Show settings section
+        document.getElementById('settings-section').style.display = '';
+        document.getElementById('main-header-title').textContent = 'Settings';
+        
+        // Reset scroll position
+        document.querySelector('.main-content').scrollTop = 0;
+        
+        document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
         // Fill user info fields
         if (window.currentUser) {
             document.getElementById('user-info-username').textContent = window.currentUser.Username;
@@ -1022,34 +1031,60 @@ window.onload = function() {
     };
     // Hide settings section when switching to other main tabs
     document.querySelectorAll('.sidebar-nav li')[0].onclick = function() {
+        // Hide all sections first
         document.getElementById('settings-section').style.display = 'none';
         document.getElementById('device-groups').style.display = 'none';
         document.getElementById('schedule-section').style.display = 'none';
-        document.getElementById('dashboard-section').style.display = '';
+        document.getElementById('analytics-section').style.display = 'none';
         document.querySelector('.tab-nav').style.display = 'none';
-        document.getElementById('main-header-title').textContent = 'Dashboard';
         document.querySelector('.main-header-actions').style.display = 'none';
+        
+        // Show dashboard section
+        document.getElementById('dashboard-section').style.display = '';
+        document.getElementById('main-header-title').textContent = 'Dashboard';
+        
+        // Reset scroll position
+        document.querySelector('.main-content').scrollTop = 0;
+        
         document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
         document.querySelectorAll('.sidebar-nav li')[0].classList.add('active');
         renderDashboard();
     };
     document.querySelectorAll('.sidebar-nav li')[1].onclick = function() {
+        // Hide all sections first
         document.getElementById('settings-section').style.display = 'none';
         document.getElementById('schedule-section').style.display = 'none';
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('analytics-section').style.display = 'none';
+        
+        // Show device sections
         document.getElementById('device-groups').style.display = '';
         document.querySelector('.tab-nav').style.display = '';
         document.getElementById('main-header-title').textContent = 'Devices';
         document.querySelector('.main-header-actions').style.display = '';
+        
+        // Reset scroll position
+        document.querySelector('.main-content').scrollTop = 0;
+        
         document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
         document.querySelectorAll('.sidebar-nav li')[1].classList.add('active');
     };
     document.getElementById('schedule-tab').onclick = function() {
+        // Hide all sections first
         document.getElementById('settings-section').style.display = 'none';
         document.getElementById('device-groups').style.display = 'none';
-        document.getElementById('schedule-section').style.display = '';
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('analytics-section').style.display = 'none';
         document.querySelector('.tab-nav').style.display = 'none';
-        document.getElementById('main-header-title').textContent = 'Schedule';
         document.querySelector('.main-header-actions').style.display = 'none';
+        
+        // Show schedule section
+        document.getElementById('schedule-section').style.display = '';
+        document.getElementById('main-header-title').textContent = 'Schedule';
+        
+        // Reset scroll position
+        document.querySelector('.main-content').scrollTop = 0;
+        
         renderSchedule();
         document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
         document.getElementById('schedule-tab').classList.add('active');
@@ -1126,6 +1161,13 @@ function renderDashboard() {
     const roomStatusDiv = document.getElementById('room-status-chart');
     roomStatusDiv.innerHTML = '';
     const rooms = getRooms(devices);
+    
+    // Create a scrollable container
+    const scrollContainer = document.createElement('div');
+    scrollContainer.style.maxHeight = '220px';
+    scrollContainer.style.overflowY = 'auto';
+    scrollContainer.style.paddingRight = '8px';
+    
     rooms.forEach(room => {
         const onCount = devices.filter(d => d.Location === room && d.Status === 'On').length;
         const offCount = devices.filter(d => d.Location === room && d.Status === 'Off').length;
@@ -1172,8 +1214,10 @@ function renderDashboard() {
         };
         bar.appendChild(detailBtn);
 
-        roomStatusDiv.appendChild(bar);
+        scrollContainer.appendChild(bar);
     });
+    
+    roomStatusDiv.appendChild(scrollContainer);
 
     // --- Quick Actions ---
     document.querySelectorAll('.dashboard-quick-actions .quick-action-btn').forEach(btn => {

@@ -399,7 +399,7 @@ Provide a helpful response about the smart home system.`;
             console.log('📊 Estimated tokens:', estimatedTokens);
 
             console.log('📤 Sending request to Gemini API...');
-            console.log('🔑 API Key:', 'AIzaSyBr0xxbWrSauQkCPX-LhvzQXA6OPX52t84');
+            console.log('🔑 API Key:', 'APIHERE');
             
             const requestBody = {
                 contents: [{

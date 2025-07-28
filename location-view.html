@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Home Security - Location View</title>
+    <link rel="stylesheet" href="css/sidebar.css">
     <style>
         * {
             margin: 0;
@@ -22,6 +23,22 @@
             display: flex;
             min-height: 100vh;
             position: relative;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        /* Adjust left panel when sidebar is collapsed */
+        .container.sidebar-collapsed .left-panel {
+            left: 80px;
+        }
+
+        /* Adjust center panel when sidebar is collapsed */
+        .container.sidebar-collapsed .center-panel {
+            margin-left: 350px;
         }
 
         /* Left Panel - Device Controls */
@@ -32,10 +49,11 @@
             overflow-y: auto;
             height: 100vh;
             position: fixed;
-            left: 0;
+            left: 280px;
             top: 0;
             border-right: 1px solid #e9ecef;
             box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            transition: left 0.3s ease;
         }
 
         .location-header {
@@ -122,7 +140,7 @@
         }
 
         .room-filter.active {
-            background: #b393b4;
+            background: #d0b3f9 ;
             color: white;
             box-shadow: 0 4px 16px rgba(179, 147, 180, 0.3);
             transform: translateY(-1px);
@@ -212,7 +230,7 @@
         }
 
         .schedule-icon {
-            color: #6f42c1;
+            color: #d0b3f9;
             font-size: 12px;
         }
 
@@ -309,6 +327,7 @@
             overflow: hidden;
             border-left: 1px solid #e9ecef;
             border-right: 1px solid #e9ecef;
+            transition: margin-left 0.3s ease;
         }
 
         .room-container {
@@ -437,7 +456,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #b393b4;
+            color: #d0b3f9;
             font-weight: 600;
             font-size: 14px;
         }
@@ -479,7 +498,7 @@
         }
 
         .date-item.active {
-            background: #b393b4;
+            background: #d0b3f9;
             color: white;
         }
 
@@ -518,7 +537,7 @@
             transform: translateY(-50%);
             width: 12px;
             height: 12px;
-            background: #b393b4;
+            background: #d0b3f9;
             border-radius: 50%;
             border: 3px solid white;
             box-shadow: 0 0 0 2px #e9ecef;
@@ -596,27 +615,184 @@
             .right-panel {
                 width: 250px;
             }
+            .container.sidebar-collapsed .center-panel {
+                margin-left: 300px;
+            }
         }
 
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
+                margin-left: 0;
+            }
+            .container.sidebar-collapsed {
+                margin-left: 0;
             }
             .left-panel, .right-panel {
                 width: 100%;
+                position: relative;
+                left: 0;
             }
             .center-panel {
                 min-height: 400px;
+                margin-left: 0;
+                margin-right: 0;
             }
+            .container.sidebar-collapsed .center-panel {
+                margin-left: 0;
+            }
+            .container.sidebar-collapsed .left-panel {
+                left: 0;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+        }
+
+        /* Fix for notification bell text hiding when collapsed */
+        .sidebar.collapsed .notification-bell span:nth-child(2) {
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Custom dropdown that opens upward */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-header {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-header:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 4px;
+        }
+
+        .custom-dropdown.open .dropdown-options {
+            max-height: 200px;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-option.selected {
+            background-color: #d0b3f9;
+            color: #ffffff;
+        }
+
+        /* Collapsed sidebar adjustments */
+        .sidebar.collapsed .dropdown-header {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .sidebar.collapsed .dropdown-options {
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
+    <!-- Reusable Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle">◀</button>
+        <div class="sidebar-header">
+            <div class="sidebar-logo-container">
+                <div class="sidebar-logo-img">S</div>
+                <span class="sidebar-logo-text">SmartHome</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="overview.html"><span>📋</span><span>Overview</span></a></li>
+                <li><a href="dashboard.html"><span>🖥️</span><span>Dashboard</span></a></li>
+                <li><a href="schedule.html"><span>📅</span><span>Schedule</span></a></li>
+                <li><a href="analytics.html"><span>📈</span><span>Analytics</span></a></li>
+                <li><a href="settings.html"><span>⚙️</span><span>Settings</span></a></li>
+                                        <li><a href="#" onclick="logout()"><span>🔓</span><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-location-select">
+            <div class="custom-dropdown" id="custom-location-dropdown">
+                <div class="dropdown-header" id="dropdown-header">
+                    <span id="selected-location">Your Home</span>
+                    <span class="dropdown-arrow">▲</span>
+                </div>
+                <div class="dropdown-options" id="dropdown-options">
+                    <div class="dropdown-option" data-value="home">Your Home</div>
+                    <div class="dropdown-option" data-value="parent">Your Parent Home</div>
+                    <div class="dropdown-option" data-value="office">Your Office</div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <span id="notification-bell" class="notification-bell">
+                <span>🔔</span><span>Notifications</span>
+                <span id="notification-badge" class="notification-badge" style="display:none;"></span>
+            </span>
+        </div>
+    </aside>
+
     <div class="container">
         <!-- Left Panel - Device Controls -->
         <div class="left-panel">
             <div class="location-header">
-                <button class="back-btn" onclick="goBack()">←</button>
                 <div class="location-info">
                     <h1 id="location-name">Your Home</h1>
                     <div class="address">401 Magnetic Drive Unit 2</div>
@@ -697,13 +873,73 @@
         </div>
     </div>
 
+    <!-- Notification Popup -->
+    <div id="notification-popup" class="notification-popup" style="display:none;">
+        <div class="notification-popup-header">
+            <span>Notifications</span>
+            <button id="close-notification-popup">✖</button>
+        </div>
+        <ul id="notification-list" class="notification-list"></ul>
+    </div>
+
     <script src="js/mock-data.js"></script>
+    <link rel="stylesheet" href="css/chatbot.css">
+    <script src="chatbot.js"></script>
     <script>
         // Global variables
         let currentLocation = 'Your Home';
         let currentRoomFilter = 'all';
         let filteredDevices = [];
         let currentRoomImage = 'house.jpg';
+
+        // Logout function
+        function logout() {
+            // Clear login state
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            
+            // Show logout message
+            alert('You have been logged out successfully!');
+            
+            // Redirect to signin page
+            window.location.href = 'signin.html';
+        }
+
+        // Notification functions
+        function getUnreadNotificationCount() {
+            return notifications.filter(n => n.Status === 'Unread').length;
+        }
+
+        function renderNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const count = getUnreadNotificationCount();
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderNotificationPopup() {
+            const popup = document.getElementById('notification-popup');
+            const list = document.getElementById('notification-list');
+            list.innerHTML = '';
+            notifications.forEach(n => {
+                const li = document.createElement('li');
+                li.className = n.Status === 'Unread' ? 'unread' : '';
+                li.innerHTML = `<span>${n.Message}</span><span class="notification-time">${n.SentTime}</span>`;
+                list.appendChild(li);
+            });
+            popup.style.display = 'flex';
+            // Mark all as read
+            notifications.forEach(n => { n.Status = 'Read'; });
+            renderNotificationBadge();
+        }
+
+        function closeNotificationPopup() {
+            document.getElementById('notification-popup').style.display = 'none';
+        }
 
         // Room image mapping
         const roomImages = {
@@ -741,12 +977,34 @@
         // Initialize the page
         function initializeLocationView() {
             const urlParams = new URLSearchParams(window.location.search);
-            const location = urlParams.get('location') || 'Your Home';
-            currentLocation = location;
+            const locationParam = urlParams.get('location');
             
-            document.getElementById('location-name').textContent = location;
-            loadDevicesForLocation(location);
+            // Map the location parameter to the correct display name and dropdown value
+            let locationDisplay = 'Your Home';
+            let dropdownValue = 'home';
+            
+            if (locationParam === 'parent') {
+                locationDisplay = 'Your Parent Home';
+                dropdownValue = 'parent';
+            } else if (locationParam === 'office') {
+                locationDisplay = 'Your Office';
+                dropdownValue = 'office';
+            }
+            
+            currentLocation = locationDisplay;
+            
+            // Update the page title and location name
+            document.getElementById('location-name').textContent = locationDisplay;
+            
+            // Set the dropdown value
+            const locationDropdown = document.getElementById('system-location-dropdown');
+            if (locationDropdown) {
+                locationDropdown.value = dropdownValue;
+            }
+            
+            loadDevicesForLocation(locationDisplay);
             renderActivityTimeline();
+            renderNotificationBadge(); // Initialize notification badge
         }
 
         // Load devices for the selected location
@@ -1023,7 +1281,105 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeLocationView);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLocationView();
+            
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const container = document.querySelector('.container');
+            
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                container.classList.add('sidebar-collapsed');
+                sidebarToggle.textContent = '▶';
+            }
+            
+            if (sidebarToggle && sidebar && container) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    container.classList.toggle('sidebar-collapsed');
+                    
+                    // Save sidebar state to localStorage
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    
+                    // Update toggle button text
+                    this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                });
+            }
+            
+            // Add notification event handlers
+            const notificationBell = document.getElementById('notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    renderNotificationPopup();
+                });
+            }
+
+            const closeNotificationBtn = document.getElementById('close-notification-popup');
+            if (closeNotificationBtn) {
+                closeNotificationBtn.addEventListener('click', function() {
+                    document.getElementById('notification-popup').style.display = 'none';
+                });
+            }
+            
+            // Test notification system
+            console.log('Location view page loaded');
+            console.log('Notifications array:', notifications);
+            console.log('Notification bell element:', document.getElementById('notification-bell'));
+            
+            // Handle custom location dropdown
+            const customDropdown = document.getElementById('custom-location-dropdown');
+            const dropdownHeader = document.getElementById('dropdown-header');
+            const dropdownOptions = document.getElementById('dropdown-options');
+            const selectedLocationSpan = document.getElementById('selected-location');
+            
+            if (dropdownHeader && dropdownOptions) {
+                // Toggle dropdown on header click
+                dropdownHeader.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    customDropdown.classList.toggle('open');
+                });
+                
+                // Handle option selection
+                dropdownOptions.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('dropdown-option')) {
+                        const value = e.target.getAttribute('data-value');
+                        const text = e.target.textContent;
+                        
+                        // Update selected location
+                        selectedLocationSpan.textContent = text;
+                        
+                        // Update selected state
+                        dropdownOptions.querySelectorAll('.dropdown-option').forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                        e.target.classList.add('selected');
+                        
+                        // Close dropdown
+                        customDropdown.classList.remove('open');
+                        
+                        // Navigate to location-view.html with the selected location
+                        window.location.href = `location-view.html?location=${encodeURIComponent(text)}`;
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!customDropdown.contains(e.target)) {
+                        customDropdown.classList.remove('open');
+                    }
+                });
+                
+                // Set initial selected state
+                const initialOption = dropdownOptions.querySelector('[data-value="home"]');
+                if (initialOption) {
+                    initialOption.classList.add('selected');
+                }
+            }
+        });
     </script>
 </body>
 </html> 

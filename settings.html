@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHome Settings</title>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        /* Settings Header */
+        .settings-header {
+            margin-bottom: 32px;
+        }
+
+        .settings-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .settings-subtitle {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .settings-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            transition: all 0.3s ease;
+        }
+
+        .settings-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .card-icon.security {
+            background: linear-gradient(135deg, #d0b3f9, #c19bf8);
+        }
+
+        .card-icon.notifications {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .card-icon.privacy {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .card-icon.system {
+            background: linear-gradient(135deg, #45b7d1, #96c93d);
+        }
+
+        .card-icon.users {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .card-icon.network {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        /* Settings Items */
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .setting-description {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #d0b3f9;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        /* Select Dropdown */
+        .setting-select {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: #d0b3f9;
+        }
+
+        /* Input Fields */
+        .setting-input {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: #d0b3f9;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #d0b3f9;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #c19bf8;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* User Management */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #d0b3f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.online {
+            background: #28a745;
+        }
+
+        .status-dot.offline {
+            background: #dc3545;
+        }
+
+        .status-dot.warning {
+            background: #ffc107;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+            
+            .container.sidebar-collapsed {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .settings-card {
+                padding: 20px;
+            }
+        }
+
+        /* Fix for notification bell text hiding when collapsed */
+        .sidebar.collapsed .notification-bell span:nth-child(2) {
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Custom dropdown that opens upward */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-header {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-header:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 4px;
+        }
+
+        .custom-dropdown.open .dropdown-options {
+            max-height: 200px;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-option.selected {
+            background-color: #d0b3f9;
+            color: #ffffff;
+        }
+
+        /* Collapsed sidebar adjustments */
+        .sidebar.collapsed .dropdown-header {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .sidebar.collapsed .dropdown-options {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Reusable Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle">◀</button>
+        <div class="sidebar-header">
+            <div class="sidebar-logo-container">
+                <div class="sidebar-logo-img">S</div>
+                <span class="sidebar-logo-text">SmartHome</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="overview.html"><span>📋</span><span>Overview</span></a></li>
+                <li><a href="dashboard.html"><span>🖥️</span><span>Dashboard</span></a></li>
+                <li><a href="schedule.html"><span>📅</span><span>Schedule</span></a></li>
+                <li><a href="analytics.html"><span>📈</span><span>Analytics</span></a></li>
+                <li class="active"><a href="settings.html"><span>⚙️</span><span>Settings</span></a></li>
+                                        <li><a href="#" onclick="logout()"><span>🔓</span><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-location-select">
+            <div class="custom-dropdown" id="custom-location-dropdown">
+                <div class="dropdown-header" id="dropdown-header">
+                    <span id="selected-location">Your Home</span>
+                    <span class="dropdown-arrow">▲</span>
+                </div>
+                <div class="dropdown-options" id="dropdown-options">
+                    <div class="dropdown-option" data-value="home">Your Home</div>
+                    <div class="dropdown-option" data-value="parent">Your Parent Home</div>
+                    <div class="dropdown-option" data-value="office">Your Office</div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <span id="notification-bell" class="notification-bell">
+                <span>🔔</span><span>Notifications</span>
+                <span id="notification-badge" class="notification-badge" style="display:none;"></span>
+            </span>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Settings Header -->
+            <div class="settings-header">
+                <h1 class="settings-title">Settings</h1>
+                <p class="settings-subtitle">Configure your smart home system preferences</p>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="settings-grid">
+                <!-- Security Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon security">🔒</div>
+                        <div>
+                            <div class="card-title">Security</div>
+                            <div class="card-subtitle">Manage security preferences</div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Motion Detection</div>
+                            <div class="setting-description">Enable motion sensors for security alerts</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Auto Lock Doors</div>
+                            <div class="setting-description">Automatically lock doors when leaving</div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Security Level</div>
+                            <div class="setting-description">Set security sensitivity level</div>
+                        </div>
+                        <select class="setting-select">
+                            <option>Low</option>
+                            <option selected>Medium</option>
+                            <option>High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon notifications">🔔</div>
+                        <div>
+                            <div class="card-title">Notifications</div>
+                            <div class="card-subtitle">Configure notification preferences</div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Push Notifications</div>
+                            <div class="setting-description">Receive push notifications on mobile</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Email Alerts</div>
+                            <div class="setting-description">Send security alerts via email</div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Alert Frequency</div>
+                            <div class="setting-description">How often to send notifications</div>
+                        </div>
+                        <select class="setting-select">
+                            <option>Immediate</option>
+                            <option selected>Every 5 minutes</option>
+                            <option>Every 15 minutes</option>
+                            <option>Hourly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon privacy">🛡️</div>
+                        <div>
+                            <div class="card-title">Privacy</div>
+                            <div class="card-subtitle">Manage data and privacy settings</div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Data Collection</div>
+                            <div class="setting-description">Allow anonymous usage data collection</div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Camera Recording</div>
+                            <div class="setting-description">Store camera footage locally</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Retention Period</div>
+                            <div class="setting-description">How long to keep recorded data</div>
+                        </div>
+                        <select class="setting-select">
+                            <option>7 days</option>
+                            <option selected>30 days</option>
+                            <option>90 days</option>
+                            <option>1 year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- System Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon system">⚙️</div>
+                        <div>
+                            <div class="card-title">System</div>
+                            <div class="card-subtitle">System configuration and updates</div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Auto Updates</div>
+                            <div class="setting-description">Automatically install system updates</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSetting(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Backup Frequency</div>
+                            <div class="setting-description">How often to backup system data</div>
+                        </div>
+                        <select class="setting-select">
+                            <option>Daily</option>
+                            <option selected>Weekly</option>
+                            <option>Monthly</option>
+                        </select>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">System Status</div>
+                            <div class="setting-description">Current system health</div>
+                        </div>
+                        <div class="status-indicator">
+                            <div class="status-dot online"></div>
+                            <span>Healthy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon users">👥</div>
+                        <div>
+                            <div class="card-title">Users</div>
+                            <div class="card-subtitle">Manage user access and permissions</div>
+                        </div>
+                    </div>
+                    <div class="user-list">
+                        <div class="user-item">
+                            <div class="user-avatar">HV</div>
+                            <div class="user-info">
+                                <div class="user-name">Hien Vu</div>
+                                <div class="user-role">Administrator</div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                            </div>
+                        </div>
+                        <div class="user-item">
+                            <div class="user-avatar">LM</div>
+                            <div class="user-info">
+                                <div class="user-name">Laura Martinez</div>
+                                <div class="user-role">Member</div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                            </div>
+                        </div>
+                        <div class="user-item">
+                            <div class="user-avatar">DS</div>
+                            <div class="user-info">
+                                <div class="user-name">Dimas Silva</div>
+                                <div class="user-role">Guest</div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary">Add User</button>
+                    </div>
+                </div>
+
+                <!-- Network Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <div class="card-icon network">🌐</div>
+                        <div>
+                            <div class="card-title">Network</div>
+                            <div class="card-subtitle">Network configuration and connectivity</div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">WiFi Network</div>
+                            <div class="setting-description">Connected to SmartHome_Network</div>
+                        </div>
+                        <div class="status-indicator">
+                            <div class="status-dot online"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">Signal Strength</div>
+                            <div class="setting-description">Current WiFi signal quality</div>
+                        </div>
+                        <div class="status-indicator">
+                            <div class="status-dot online"></div>
+                            <span>Excellent</span>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="setting-info">
+                            <div class="setting-label">IP Address</div>
+                            <div class="setting-description">Current network IP</div>
+                        </div>
+                        <span style="font-family: monospace; color: #6c757d;">192.168.1.100</span>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-secondary">Change Network</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 16px; margin-top: 32px;">
+                <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                <button class="btn btn-secondary" onclick="resetSettings()">Reset to Default</button>
+                <button class="btn btn-danger" onclick="factoryReset()">Factory Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Popup -->
+    <div id="notification-popup" class="notification-popup" style="display:none;">
+        <div class="notification-popup-header">
+            <span>Notifications</span>
+            <button id="close-notification-popup">✖</button>
+        </div>
+        <ul id="notification-list" class="notification-list"></ul>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <link rel="stylesheet" href="css/chatbot.css">
+    <script src="chatbot.js"></script>
+    <script>
+        // Logout function
+        function logout() {
+            // Clear login state
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            
+            // Show logout message
+            alert('You have been logged out successfully!');
+            
+            // Redirect to signin page
+            window.location.href = 'signin.html';
+        }
+
+        // Toggle setting switches
+        function toggleSetting(element) {
+            element.classList.toggle('active');
+        }
+
+        // Save settings
+        function saveSettings() {
+            // Simulate saving settings
+            showNotification('Settings saved successfully!', 'success');
+        }
+
+        // Reset settings
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default?')) {
+                showNotification('Settings reset to default!', 'info');
+            }
+        }
+
+        // Factory reset
+        function factoryReset() {
+            if (confirm('WARNING: This will erase all data and reset the system to factory settings. This action cannot be undone. Are you sure?')) {
+                showNotification('Factory reset initiated...', 'warning');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Create a simple notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#d0b3f9' : type === 'warning' ? '#ffc107' : '#6c757d'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                font-size: 14px;
+                font-weight: 500;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Notification functions
+        function getUnreadNotificationCount() {
+            return notifications.filter(n => n.Status === 'Unread').length;
+        }
+
+        function renderNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const count = getUnreadNotificationCount();
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderNotificationPopup() {
+            const popup = document.getElementById('notification-popup');
+            const list = document.getElementById('notification-list');
+            list.innerHTML = '';
+            
+            // Create more realistic notification messages
+            const notificationMessages = [
+                { message: 'Motion detected in kitchen camera', time: '2 min ago', status: 'Unread' },
+                { message: 'Front door unlocked at 2:30 PM', time: '5 min ago', status: 'Unread' },
+                { message: 'Thermostat temperature adjusted to 22°C', time: '12 min ago', status: 'Read' },
+                { message: 'Living room lights turned on automatically', time: '18 min ago', status: 'Read' },
+                { message: 'Security system armed for the night', time: '25 min ago', status: 'Read' }
+            ];
+            
+            notificationMessages.forEach(n => {
+                const li = document.createElement('li');
+                li.className = n.status === 'Unread' ? 'unread' : '';
+                li.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${n.time}</div>
+                    </div>
+                    <div class="notification-status ${n.status.toLowerCase()}">${n.status}</div>
+                `;
+                list.appendChild(li);
+            });
+            
+            popup.style.display = 'flex';
+            renderNotificationBadge();
+        }
+
+        function closeNotificationPopup() {
+            document.getElementById('notification-popup').style.display = 'none';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize notification badge
+            renderNotificationBadge();
+            
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const container = document.querySelector('.container');
+            
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                container.classList.add('sidebar-collapsed');
+                sidebarToggle.textContent = '▶';
+            }
+            
+            if (sidebarToggle && sidebar && container) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    container.classList.toggle('sidebar-collapsed');
+                    
+                    // Save sidebar state to localStorage
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    
+                    // Update toggle button text
+                    this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                });
+            }
+
+            // Notification event handlers
+            const notificationBell = document.getElementById('notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    renderNotificationPopup();
+                });
+            }
+
+            const closeNotificationBtn = document.getElementById('close-notification-popup');
+            if (closeNotificationBtn) {
+                closeNotificationBtn.addEventListener('click', function() {
+                    closeNotificationPopup();
+                });
+            }
+            
+            // Handle custom location dropdown
+            const customDropdown = document.getElementById('custom-location-dropdown');
+            const dropdownHeader = document.getElementById('dropdown-header');
+            const dropdownOptions = document.getElementById('dropdown-options');
+            const selectedLocationSpan = document.getElementById('selected-location');
+            
+            if (dropdownHeader && dropdownOptions) {
+                // Toggle dropdown on header click
+                dropdownHeader.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    customDropdown.classList.toggle('open');
+                });
+                
+                // Handle option selection
+                dropdownOptions.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('dropdown-option')) {
+                        const value = e.target.getAttribute('data-value');
+                        const text = e.target.textContent;
+                        
+                        // Update selected location
+                        selectedLocationSpan.textContent = text;
+                        
+                        // Update selected state
+                        dropdownOptions.querySelectorAll('.dropdown-option').forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                        e.target.classList.add('selected');
+                        
+                        // Close dropdown
+                        customDropdown.classList.remove('open');
+                        
+                        // Navigate to location-view.html with the selected location
+                        window.location.href = `location-view.html?location=${encodeURIComponent(text)}`;
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!customDropdown.contains(e.target)) {
+                        customDropdown.classList.remove('open');
+                    }
+                });
+                
+                // Set initial selected state
+                const initialOption = dropdownOptions.querySelector('[data-value="home"]');
+                if (initialOption) {
+                    initialOption.classList.add('selected');
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

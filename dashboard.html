@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHome Dashboard</title>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+        /* Additional styles for the new dashboard design */
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+            background: #f8f9fa;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            gap: 24px;
+            background: #f8f9fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+            
+            .container.sidebar-collapsed {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .right-sidebar {
+                width: 100%;
+            }
+            
+            .right-sidebar-card {
+                margin: 0;
+                border-radius: 12px;
+            }
+        }
+
+        .left-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-sidebar {
+            width: 400px;
+            margin-top: 10px;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .right-sidebar-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            height: fit-content;
+        }
+
+        .greeting-section {
+            margin-bottom: 1rem;
+        }
+
+        .greeting-text {
+            font-size: 32px;
+            color: #2c3e50;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .greeting-subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .new-device-btn {
+            background: #d0b3f9;
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .new-device-btn:hover {
+            background: #c19bf8;
+        }
+
+        .room-dropdown {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .room-dropdown:focus {
+            outline: none;
+            border-color: #d0b3f9;
+        }
+
+        .climate-control-section {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ac-control-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ac-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .ac-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ac-toggle {
+            background: #d0b3f9;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .ac-main-content {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex: 1;
+        }
+
+        .temperature-dial {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .dial-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d0b3f9, #e0c3f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 4px 16px rgba(208, 179, 249, 0.3);
+        }
+
+        .temperature-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .temperature-unit {
+            font-size: 0.9rem;
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .dial-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.8rem;
+            max-width: 150px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .temp-btn {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .temp-btn:hover {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .ac-modes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .mode-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .mode-btn.active {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .mode-btn:hover {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .sensor-widgets {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .sensor-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            flex: 1;
+        }
+
+        .sensor-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.4rem;
+        }
+
+        .sensor-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d0b3f9;
+            margin-bottom: 0.4rem;
+        }
+
+        .sensor-chart {
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            background: #d0b3f9;
+            border-radius: 2px;
+            width: 6px;
+            margin: 0 1px;
+        }
+
+        .devices-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .devices-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .devices-grid {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .device-card {
+            min-width: 200px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .device-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .device-card.active {
+            background: #f8f9fa;
+            border-color: #d0b3f9;
+        }
+
+        .device-icon {
+            font-size: 2.5rem;
+            color: #d0b3f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+
+        .device-status {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .device-toggle {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .device-toggle.on {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .device-toggle.off {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #e9ecef;
+        }
+
+        /* Device Controls */
+        .device-controls {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .temp-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .temp-control button {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .temp-control button:hover {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .temp-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+            background: #f8f9fa;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .control-slider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .control-slider span:first-child {
+            min-width: 70px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .control-slider input[type="range"] {
+            flex: 1;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            border: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .control-slider input[type="range"]::-webkit-slider-track {
+            background: #e1e5e9;
+            border-radius: 4px;
+            height: 8px;
+        }
+
+        .control-slider input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #d0b3f9;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(208, 179, 249, 0.3);
+            transition: all 0.2s;
+        }
+
+        .control-slider input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(208, 179, 249, 0.4);
+        }
+
+        .control-slider input[type="range"]::-moz-range-track {
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 8px;
+            border: none;
+        }
+
+        .control-slider input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #d0b3f9;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(208, 179, 249, 0.3);
+            transition: all 0.2s;
+        }
+
+        .control-slider input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(208, 179, 249, 0.4);
+        }
+
+        .control-value {
+            min-width: 45px;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+            background: #f8f9fa;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .show-sensor-btn {
+            background: #d0b3f9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .show-sensor-btn:hover {
+            background: #c19bf8;
+        }
+
+        /* Right Sidebar Styles */
+        .sidebar-section {
+            margin-bottom: 0;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #a8dbe5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-location {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .camera-feed {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0;
+        }
+
+        .camera-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #e74c3c;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .camera-timestamp {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .camera-preview {
+            width: 100%;
+            height: 150px;
+            background: #e1e5e9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .home-occupants {
+            margin-bottom: 1rem;
+        }
+
+        .occupants-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .occupant-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .occupant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #a8dbe5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .occupant-name {
+            font-size: 0.8rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .weather-warning {
+            background: #dde9f7;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .weather-date {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .weather-location {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .weather-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .weather-btn {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .weather-btn.active {
+            background: #a8dbe5;
+            color: #fff;
+            border-color: #a8dbe5;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .weather-temp {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .weather-icon {
+            font-size: 2.5rem;
+            color: #666;
+        }
+
+        .weather-condition {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .weather-warning-text {
+            font-weight: 600;
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-advice {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .content-area {
+                flex-direction: column;
+            }
+            
+            .right-sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid #e1e5e9;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .left-content {
+                padding: 1rem;
+            }
+            
+            .ac-main-content {
+                flex-direction: column;
+            }
+            
+            .sensor-widgets {
+                flex-direction: column;
+            }
+            
+            .devices-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Room Tabs Styling */
+        .tab-nav {
+            background: #fff;
+            padding: 0 2rem;
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 2rem;
+        }
+
+        .tab-nav ul {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            padding: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .tab-nav li {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            background: #f8f9fa;
+            color: #666;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .tab-nav li.active {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .tab-nav li:hover:not(.active) {
+            background: #fff;
+            color: #333;
+            border-color: #e1e5e9;
+        }
+
+        /* Device Groups Styling */
+        .device-group {
+            margin-bottom: 2rem;
+        }
+
+        .device-group-title {
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .quick-actions button {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-actions button:hover {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Device Card Styling */
+        .device-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            min-height: 160px;
+            transition: all 0.2s;
+            border: 1px solid #f0f2f5;
+        }
+
+        .device-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .device-card .device-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .device-card .device-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #d0b3f9;
+        }
+
+        .device-card .device-control {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .device-card .device-control:hover {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .device-card .device-control.on {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .device-card .device-control.off {
+            background: #f8f9fa;
+            color: #666;
+            border-color: #e1e5e9;
+        }
+
+        /* Device Controls */
+        .temp-control {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .temp-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+            background: #f8f9fa;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .show-sensor-btn {
+            background: #d0b3f9;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .show-sensor-btn:hover {
+            background: #c19bf8;
+        }
+
+        /* Sensor Data Modal */
+        .sensor-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .sensor-data-modal {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow: hidden;
+            border: 1px solid #f0f2f5;
+        }
+
+        .sensor-data-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .sensor-data-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .sensor-data-content {
+            padding: 1.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .sensor-data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e1e5e9;
+            font-size: 0.9rem;
+        }
+
+        .sensor-data-item span:first-child {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .sensor-data-item span:last-child {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Device Modal Styles */
+        .device-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .device-modal-content {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow: hidden;
+            border: 1px solid #f0f2f5;
+        }
+
+        .device-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .device-modal-header span {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .device-modal-header button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .device-modal-header button:hover {
+            color: #333;
+        }
+
+        .device-modal-content form {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .device-modal-content label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .device-modal-content input,
+        .device-modal-content select {
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #e1e5e9;
+            font-size: 0.95rem;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .device-modal-content input:focus,
+        .device-modal-content select:focus {
+            outline: none;
+            border-color: #d0b3f9;
+        }
+
+        .device-modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f2f5;
+        }
+
+        .device-modal button {
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .device-modal button[type="submit"] {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .device-modal button[type="submit"]:hover {
+            background: #c19bf8;
+        }
+
+        .device-modal button[type="button"] {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #e9ecef;
+        }
+
+        .device-modal button[type="button"]:hover {
+            background: #e9ecef;
+        }
+
+        #delete-device-btn {
+            background: #dc3545 !important;
+            color: #fff !important;
+            border-color: #dc3545 !important;
+        }
+
+        #delete-device-btn:hover {
+            background: #c82333 !important;
+        }
+
+        /* Device Controls */
+        .device-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .control-slider {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .control-slider input[type="range"] {
+            flex: 1;
+            height: 4px;
+            background: #e1e5e9;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .control-slider input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #d0b3f9;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .control-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+            background: #f8f9fa;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* Modern Notification Popup Styles */
+        .notification-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.1);
+            width: 450px;
+            max-width: 90vw;
+            max-height: 70vh;
+            overflow: hidden;
+            border: 1px solid #f0f2f5;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .notification-popup.show {
+            display: block;
+        }
+
+        .notification-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .notification-popup-header span {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-popup-header span::before {
+            content: '🔔';
+            font-size: 16px;
+        }
+
+        .notification-popup-header button {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-popup-header button:hover {
+            background: #d0b3f9;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #d0b3f9;
+            border-radius: 3px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background: #c19bf8;
+        }
+
+        .notification-list li {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .notification-list li:hover {
+            background: #f8f9fa;
+            transform: translateX(4px);
+        }
+
+        .notification-list li:last-child {
+            border-bottom: none;
+        }
+
+        .notification-list li.unread {
+            background: linear-gradient(135deg, #f0f8ff 0%, #f8f9fa 100%);
+            border-left: 4px solid #d0b3f9;
+        }
+
+        .notification-list li.unread::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #d0b3f9;
+            border-radius: 50%;
+        }
+
+        .notification-list li:not(.unread) {
+            background: #ffffff;
+        }
+
+        .notification-content {
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        .notification-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification-status.unread {
+            background: #d0b3f9;
+            color: #ffffff;
+        }
+
+        .notification-status.read {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        /* Fix for notification bell text hiding when collapsed */
+        .sidebar.collapsed .notification-bell span:nth-child(2) {
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Custom dropdown that opens upward */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-header {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-header:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 4px;
+        }
+
+        .custom-dropdown.open .dropdown-options {
+            max-height: 200px;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-option.selected {
+            background-color: #d0b3f9;
+            color: #ffffff;
+        }
+
+        /* Collapsed sidebar adjustments */
+        .sidebar.collapsed .dropdown-header {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .sidebar.collapsed .dropdown-options {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Reusable Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle">◀</button>
+        <div class="sidebar-header">
+            <div class="sidebar-logo-container">
+                <div class="sidebar-logo-img">S</div>
+                <span class="sidebar-logo-text">SmartHome</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="overview.html"><span>📋</span><span>Overview</span></a></li>
+                <li class="active"><a href="dashboard.html"><span>🖥️</span><span>Dashboard</span></a></li>
+                <li><a href="schedule.html"><span>📅</span><span>Schedule</span></a></li>
+                <li><a href="analytics.html"><span>📈</span><span>Analytics</span></a></li>
+                <li><a href="settings.html"><span>⚙️</span><span>Settings</span></a></li>
+                                        <li><a href="#" onclick="logout()"><span>🔓</span><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-location-select">
+            <div class="custom-dropdown" id="custom-location-dropdown">
+                <div class="dropdown-header" id="dropdown-header">
+                    <span id="selected-location">Your Home</span>
+                    <span class="dropdown-arrow">▲</span>
+                </div>
+                <div class="dropdown-options" id="dropdown-options">
+                    <div class="dropdown-option" data-value="home">Your Home</div>
+                    <div class="dropdown-option" data-value="parent">Your Parent Home</div>
+                    <div class="dropdown-option" data-value="office">Your Office</div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <span id="notification-bell" class="notification-bell">
+                <span>🔔</span><span>Notifications</span>
+                <span id="notification-badge" class="notification-badge" style="display:none;"></span>
+            </span>
+        </div>
+
+        
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        <div class="main-content">
+            <div class="left-content">
+                <!-- Greeting Section -->
+                <div class="greeting-section">
+                    <div class="greeting-text">Good Morning, Hien Vu 😉</div>
+                    <div class="greeting-subtitle">Have a nice day</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="new-device-btn">
+                        <span>+</span> New Device
+                    </button>
+                    <select class="room-dropdown">
+                        <option value="all">All Rooms</option>
+                        <option value="Living Room">Living Room</option>
+                        <option value="Bedroom">Bedroom</option>
+                        <option value="Kitchen">Kitchen</option>
+                        <option value="Bathroom">Bathroom</option>
+                        <option value="Backyard">Backyard</option>
+                        <option value="Entryway">Entryway</option>
+                        <option value="Garage">Garage</option>
+                    </select>
+                </div>
+
+                    <!-- Climate Control Section -->
+                    <div class="climate-control-section">
+                        <!-- Air Conditioning Control Card -->
+                        <div class="ac-control-card">
+                            <div class="ac-header">
+                                <div class="ac-title">
+                                    <span>❄️</span> Air Conditioning
+                                </div>
+                                <div class="ac-toggle">ON</div>
+                            </div>
+                            <div class="ac-main-content">
+                                <div class="temperature-dial">
+                                    <div class="dial-circle">
+                                        <div>
+                                            <div class="temperature-display">18°C</div>
+                                            <div class="temperature-unit">Celcious</div>
+                                        </div>
+                                    </div>
+                                    <div class="dial-controls">
+                                        <button class="temp-btn">-</button>
+                                        <span style="color: #666; font-size: 0.8rem;">05°C</span>
+                                        <span style="color: #666; font-size: 0.8rem;">25°C</span>
+                                        <button class="temp-btn">+</button>
+                                    </div>
+                                </div>
+                                <div class="ac-modes">
+                                    <button class="mode-btn">☀️</button>
+                                    <button class="mode-btn active">❄️</button>
+                                    <button class="mode-btn">💧</button>
+                                    <button class="mode-btn">💨</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sensor Widgets -->
+                        <div class="sensor-widgets">
+                            <div class="sensor-card">
+                                <div class="sensor-title">Temperature</div>
+                                <div class="sensor-value">+25°C</div>
+                                <div class="sensor-chart" id="temp-chart"></div>
+                            </div>
+                            <div class="sensor-card">
+                                <div class="sensor-title">Humidity</div>
+                                <div class="sensor-value">30%</div>
+                                <div class="sensor-chart" id="humidity-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Devices Section -->
+                    <div class="devices-section">
+                        <div class="devices-title">Your Devices</div>
+                        <div class="devices-grid" id="devices-grid">
+                            <!-- Device cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="right-sidebar">
+                    <div class="right-sidebar-card">
+                        <!-- User Profile -->
+                        <div class="sidebar-section">
+                            <div class="user-profile">
+                                <div class="user-avatar">
+                                    <img src="assets/ava1.jpg" alt="Hien Vu" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                </div>
+                                <div class="user-info">
+                                    <h3>Hien Vu</h3>
+                                    <div class="user-location">Hanoi, Vietnam</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Camera Feed -->
+                        <div class="sidebar-section">
+                            <div class="camera-feed">
+                                <div class="camera-header">
+                                    <div class="live-indicator">
+                                        <div class="live-dot"></div>
+                                        Live
+                                    </div>
+                                    <div class="camera-timestamp">03/11 01:45:35</div>
+                                </div>
+                                <div class="camera-preview">
+                                    <img src="assets/camfeed.jpg" alt="Camera Feed" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- At Home Now -->
+                        <div class="sidebar-section">
+                            <div class="sidebar-title">Log In Recently</div>
+                            <div class="occupants-grid">
+                                <div class="occupant-item">
+                                    <div class="occupant-avatar">
+                                        <img src="assets/ava2.jpg" alt="Laura" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    </div>
+                                    <div class="occupant-name">Laura</div>
+                                </div>
+                                <div class="occupant-item">
+                                    <div class="occupant-avatar">
+                                        <img src="assets/ava3.jpg" alt="Dimas" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    </div>
+                                    <div class="occupant-name">Dimas</div>
+                                </div>
+                                <div class="occupant-item">
+                                    <div class="occupant-avatar">
+                                        <img src="assets/ava4.jpg" alt="Marie" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    </div>
+                                    <div class="occupant-name">Marie</div>
+                                </div>
+                                <div class="occupant-item">
+                                    <div class="occupant-avatar">N</div>
+                                    <div class="occupant-name">Naura</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weather Warning -->
+                        <div class="sidebar-section">
+                            <div class="weather-warning">
+                                <div class="weather-header">
+                                    <div>
+                                        <div class="weather-date">Sat, June 12</div>
+                                        <div class="weather-location">Hanoi</div>
+                                    </div>
+                                    <div class="weather-toggle">
+                                        <button class="weather-btn active">Day</button>
+                                        <button class="weather-btn">Week</button>
+                                    </div>
+                                </div>
+                                <div class="weather-main">
+                                    <div class="weather-temp">18°C</div>
+                                    <div class="weather-icon">☁️</div>
+                                    <div class="weather-condition">Rainny</div>
+                                </div>
+                                <div class="weather-warning-text">Heavy rain!</div>
+                                <div class="weather-advice">Remember to bring an umbrella</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Popup -->
+    <div id="notification-popup" class="notification-popup">
+        <div class="notification-popup-header">
+            <span>Notifications</span>
+            <button id="close-notification-popup">✖</button>
+        </div>
+        <ul id="notification-list" class="notification-list"></ul>
+    </div>
+
+    <!-- Device Modal -->
+    <div id="device-modal" class="device-modal" style="display:none;">
+        <div class="device-modal-content">
+            <div class="device-modal-header">
+                <span>Edit Device</span>
+                <button id="close-device-modal">✖</button>
+            </div>
+            <form id="device-form">
+                <label>Device Name
+                    <input type="text" id="modal-device-name" required />
+                </label>
+                <label>Device Type
+                    <select id="modal-device-type">
+                        <option value="Light">Light</option>
+                        <option value="Thermostat">Thermostat</option>
+                        <option value="Camera">Camera</option>
+                        <option value="Sensor">Sensor</option>
+                        <option value="Plug">Plug</option>
+                        <option value="Speaker">Speaker</option>
+                        <option value="TV">TV</option>
+                        <option value="Fan">Fan</option>
+                        <option value="Door Lock">Door Lock</option>
+                        <option value="Curtain">Curtain</option>
+                        <option value="Humidifier">Humidifier</option>
+                        <option value="Air Purifier">Air Purifier</option>
+                        <option value="Vacuum">Vacuum</option>
+                        <option value="Refrigerator">Refrigerator</option>
+                        <option value="Washer">Washer</option>
+                        <option value="Dryer">Dryer</option>
+                        <option value="Oven">Oven</option>
+                        <option value="Microwave">Microwave</option>
+                        <option value="Router">Router</option>
+                        <option value="Switch">Switch</option>
+                        <option value="Alarm">Alarm</option>
+                        <option value="Blinds">Blinds</option>
+                        <option value="Projector">Projector</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </label>
+                <label>Location
+                    <input type="text" id="modal-device-location" list="location-suggestions" />
+                    <datalist id="location-suggestions">
+                        <option value="Living Room">
+                        <option value="Bedroom">
+                        <option value="Kitchen">
+                        <option value="Garage">
+                        <option value="Office">
+                        <option value="Hallway">
+                        <option value="Bathroom">
+                        <option value="Porch">
+                        <option value="Dining Room">
+                        <option value="Kids Room">
+                        <option value="Master Bedroom">
+                        <option value="Guest Room">
+                        <option value="Laundry Room">
+                        <option value="Backyard">
+                        <option value="Entryway">
+                        <option value="Other">
+                        <option value="Unassigned">
+                    </datalist>
+                </label>
+                <label>Status
+                    <select id="modal-device-status">
+                        <option value="On">On</option>
+                        <option value="Off">Off</option>
+                    </select>
+                </label>
+                <div class="device-modal-actions">
+                    <button type="submit" id="save-device-btn">Save</button>
+                    <button type="button" id="cancel-device-btn">Cancel</button>
+                    <button type="button" id="delete-device-btn">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sensor Data Modal -->
+    <div id="sensor-modal" class="device-modal" style="display:none;">
+        <div class="device-modal-content">
+            <div class="device-modal-header">
+                <span>Sensor Data</span>
+                <button id="close-sensor-modal">✖</button>
+            </div>
+            <div id="sensor-data-content">
+                <!-- Sensor data will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <link rel="stylesheet" href="css/chatbot.css">
+    <script src="chatbot.js"></script>
+    <script>
+        // Global variables for device management
+        let currentRoom = 'all';
+        let currentSearch = '';
+        let editingDevice = null;
+
+        // Notification functions
+        function getUnreadNotificationCount() {
+            return notifications.filter(n => n.Status === 'Unread').length;
+        }
+
+        function renderNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const count = getUnreadNotificationCount();
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderNotificationPopup() {
+            const popup = document.getElementById('notification-popup');
+            const list = document.getElementById('notification-list');
+            list.innerHTML = '';
+            
+            // Create more realistic notification messages
+            const notificationMessages = [
+                { message: 'Front door unlocked at 2:30 PM', time: '2 min ago', status: 'Unread' },
+                { message: 'Motion detected in kitchen camera', time: '5 min ago', status: 'Unread' },
+                { message: 'Thermostat temperature adjusted to 22°C', time: '12 min ago', status: 'Read' },
+                { message: 'Living room lights turned on automatically', time: '18 min ago', status: 'Read' },
+                { message: 'Security system armed for the night', time: '25 min ago', status: 'Read' },
+                { message: 'Coffee machine started brewing', time: '32 min ago', status: 'Read' },
+                { message: 'Garage door opened remotely', time: '45 min ago', status: 'Read' },
+                { message: 'Air purifier filter needs replacement', time: '1 hour ago', status: 'Unread' }
+            ];
+            
+            notificationMessages.forEach(n => {
+                const li = document.createElement('li');
+                li.className = n.status === 'Unread' ? 'unread' : '';
+                li.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${n.time}</div>
+                    </div>
+                    <div class="notification-status ${n.status.toLowerCase()}">${n.status}</div>
+                `;
+                list.appendChild(li);
+            });
+            
+            popup.classList.add('show');
+            renderNotificationBadge();
+        }
+
+        function closeNotificationPopup() {
+            document.getElementById('notification-popup').classList.remove('show');
+        }
+
+        // Dashboard functionality
+        // Logout function
+        function logout() {
+            // Clear login state
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            
+            // Show logout message
+            alert('You have been logged out successfully!');
+            
+            // Redirect to signin page
+            window.location.href = 'signin.html';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the dashboard
+            initializeDashboard();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Debug sidebar state
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            console.log('Dashboard page loaded');
+            console.log('Sidebar collapsed state:', sidebarCollapsed);
+            console.log('Notifications array:', notifications);
+            console.log('Notification bell element:', document.getElementById('notification-bell'));
+        });
+
+        function initializeDashboard() {
+            console.log('Initializing dashboard...');
+            
+            // Initialize device grid with room filtering
+            renderDevicesGrid();
+            
+            // Create sensor charts
+            createSensorCharts();
+            
+            // Initialize notification badge
+            renderNotificationBadge();
+            
+            console.log('Dashboard initialized successfully');
+        }
+
+        function renderDevicesGrid() {
+            const devicesGrid = document.getElementById('devices-grid');
+            if (!devicesGrid) return;
+            
+            // Get all devices and apply room filtering
+            let filteredDevices = [...devices];
+            
+            // Filter by room
+            if (currentRoom !== 'all') {
+                filteredDevices = filteredDevices.filter(device => 
+                    device.Location === currentRoom
+                );
+            }
+            
+            // Filter by search if needed
+            if (currentSearch) {
+                filteredDevices = filteredDevices.filter(device => 
+                    device.DeviceName.toLowerCase().includes(currentSearch.toLowerCase())
+                );
+            }
+            
+            // Render device cards
+            devicesGrid.innerHTML = filteredDevices.map(device => `
+                <div class="device-card ${device.Status === 'On' ? 'active' : ''}" onclick="openDeviceModal(${device.DeviceID})">
+                    <div class="device-icon">${getDeviceTypeIcon(device.DeviceType)}</div>
+                    <div class="device-name">${device.DeviceName}</div>
+                    <div class="device-status">${device.Status}</div>
+                    <button class="device-toggle ${device.Status === 'On' ? 'on' : ''}" 
+                            onclick="event.stopPropagation(); toggleDevice(${device.DeviceID})">
+                        ${device.Status}
+                    </button>
+                    ${createDeviceControls(device)}
+                </div>
+            `).join('');
+        }
+
+        function getDeviceTypeIcon(deviceType) {
+            const icons = {
+                'Light': '💡',
+                'Thermostat': '🌡️',
+                'Heater': '🌡️',
+                'Camera': '📹',
+                'Sensor': '📡',
+                'Plug': '🔌',
+                'Speaker': '🔊',
+                'TV': '📺',
+                'Fan': '💨',
+                'Door Lock': '🔒',
+                'Door Controller': '🔒',
+                'Curtain': '🪟',
+                'Air Purifier': '🌬️',
+                'Vacuum': '🤖',
+                'Refrigerator': '❄️',
+                'Washer': '🧺',
+                'Dryer': '🌪️',
+                'Oven': '🔥',
+                'Microwave': '📟',
+                'Router': '📶',
+                'Switch': '🔘',
+                'Alarm': '🚨',
+                'Blinds': '🪟',
+                'Projector': '📽️',
+                'Nightlight': '💡',
+                'AC': '❄️',
+                'Other': '⚙️'
+            };
+            return icons[deviceType] || '⚙️';
+        }
+
+        function createDeviceControls(device) {
+            let controls = '';
+            
+            // Temperature controls for thermostats and heaters
+            if (device.DeviceType === 'Thermostat' || device.DeviceType === 'Heater' || device.DeviceType === 'AC') {
+                controls += `
+                    <div class="device-controls">
+                        <div class="temp-control">
+                            <button onclick="event.stopPropagation(); adjustTemperature(${device.DeviceID}, -1)">-</button>
+                            <span class="temp-value">${device.Temperature || 22}°C</span>
+                            <button onclick="event.stopPropagation(); adjustTemperature(${device.DeviceID}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Brightness control for lights and nightlights
+            if (device.DeviceType === 'Light' || device.DeviceType === 'Nightlight') {
+                controls += `
+                    <div class="device-controls">
+                        <div class="control-slider">
+                            <span>Brightness:</span>
+                            <input type="range" min="0" max="100" value="${device.Brightness || 70}" 
+                                   onchange="event.stopPropagation(); adjustBrightness(${device.DeviceID}, this.value)" />
+                            <span class="control-value">${device.Brightness || 70}%</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Curtain control
+            if (device.DeviceType === 'Curtain') {
+                controls += `
+                    <div class="device-controls">
+                        <div class="control-slider">
+                            <span>Open:</span>
+                            <input type="range" min="0" max="100" value="${device.OpenPercentage || 80}" 
+                                   onchange="event.stopPropagation(); adjustCurtain(${device.DeviceID}, this.value)" />
+                            <span class="control-value">${device.OpenPercentage || 80}%</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Sensor data button for cameras and sensors
+            if (device.DeviceType === 'Camera' || device.DeviceType === 'Sensor') {
+                controls += `
+                    <button class="show-sensor-btn" onclick="event.stopPropagation(); showSensorDataModal(${device.DeviceID})">
+                        Show Sensor Data
+                    </button>
+                `;
+            }
+            
+            return controls;
+        }
+
+        function openDeviceModal(deviceId) {
+            const device = devices.find(d => d.DeviceID === deviceId);
+            if (!device) return;
+            
+            editingDevice = device;
+            
+            // Populate modal fields
+            document.getElementById('modal-device-name').value = device.DeviceName;
+            document.getElementById('modal-device-type').value = device.DeviceType;
+            document.getElementById('modal-device-location').value = device.Location || '';
+            document.getElementById('modal-device-status').value = device.Status;
+            
+            // Show modal
+            document.getElementById('device-modal').style.display = 'flex';
+        }
+
+        function closeDeviceModal() {
+            document.getElementById('device-modal').style.display = 'none';
+            editingDevice = null;
+        }
+
+        function showSensorDataModal(deviceId) {
+            const device = devices.find(d => d.DeviceID === deviceId);
+            if (!device) return;
+            
+            // Find sensor data for this device
+            const deviceSensorData = sensorData.filter(data => data.DeviceID === deviceId);
+            
+            // Populate sensor data content
+            const sensorContent = document.getElementById('sensor-data-content');
+            sensorContent.innerHTML = deviceSensorData.map(data => `
+                <div class="sensor-data-item">
+                    <span>Time: ${data.CreatedAt}</span>
+                    <span>Value: ${data.Values}</span>
+                </div>
+            `).join('');
+            
+            // Show modal
+            document.getElementById('sensor-modal').style.display = 'flex';
+        }
+
+        function closeSensorModal() {
+            document.getElementById('sensor-modal').style.display = 'none';
+        }
+
+        function adjustTemperature(deviceId, change) {
+            const device = devices.find(d => d.DeviceID === deviceId);
+            if (device) {
+                device.Temperature = (device.Temperature || 22) + change;
+                device.Temperature = Math.max(5, Math.min(30, device.Temperature));
+                renderDevicesGrid();
+            }
+        }
+
+        function adjustBrightness(deviceId, value) {
+            const device = devices.find(d => d.DeviceID === deviceId);
+            if (device) {
+                device.Brightness = parseInt(value);
+                renderDevicesGrid();
+            }
+        }
+
+        function adjustCurtain(deviceId, value) {
+            const device = devices.find(d => d.DeviceID === deviceId);
+            if (device) {
+                device.OpenPercentage = parseInt(value);
+                renderDevicesGrid();
+            }
+        }
+
+        function toggleDevice(deviceId) {
+            const device = devices.find(d => d.DeviceID === deviceId);
+            if (device) {
+                device.Status = device.Status === 'On' ? 'Off' : 'On';
+                renderDevicesGrid(); // Refresh the display
+            }
+        }
+
+        function createSensorCharts() {
+            // Create temperature chart
+            const tempChart = document.getElementById('temp-chart');
+            if (tempChart) {
+                for (let i = 0; i < 7; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = `${15 + Math.random() * 25}px`;
+                    bar.style.left = `${(i * 14.28)}%`;
+                    tempChart.appendChild(bar);
+                }
+            }
+
+            // Create humidity chart
+            const humidityChart = document.getElementById('humidity-chart');
+            if (humidityChart) {
+                for (let i = 0; i < 7; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = `${8 + Math.random() * 20}px`;
+                    bar.style.left = `${(i * 14.28)}%`;
+                    humidityChart.appendChild(bar);
+                }
+            }
+        }
+
+        function setupEventListeners() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.container');
+            
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            console.log('Setting up sidebar with collapsed state:', sidebarCollapsed);
+            
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                sidebarToggle.textContent = '▶';
+                console.log('Sidebar collapsed successfully');
+            } else {
+                console.log('Sidebar expanded by default');
+            }
+            
+            if (sidebarToggle && sidebar && mainContent) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('sidebar-collapsed');
+                    
+                    // Save sidebar state to localStorage
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    
+                    // Update toggle button text
+                    this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                });
+            }
+
+            // Temperature controls
+            const tempBtns = document.querySelectorAll('.temp-btn');
+            tempBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tempDisplay = document.querySelector('.temperature-display');
+                    let currentTemp = parseInt(tempDisplay.textContent);
+                    
+                    if (this.textContent === '+') {
+                        currentTemp = Math.min(25, currentTemp + 1);
+                    } else {
+                        currentTemp = Math.max(5, currentTemp - 1);
+                    }
+                    
+                    tempDisplay.textContent = `${currentTemp}°C`;
+                });
+            });
+
+            // AC mode buttons
+            const modeBtns = document.querySelectorAll('.mode-btn');
+            modeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modeBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Weather toggle
+            const weatherBtns = document.querySelectorAll('.weather-btn');
+            weatherBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    weatherBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // AC toggle
+            const acToggle = document.querySelector('.ac-toggle');
+            if (acToggle) {
+                acToggle.addEventListener('click', function() {
+                    const isOn = this.textContent === 'ON';
+                    this.textContent = isOn ? 'OFF' : 'ON';
+                    this.style.background = isOn ? '#666' : '#d0b3f9';
+                });
+            }
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    currentSearch = e.target.value;
+                    renderDevicesGrid();
+                });
+            }
+
+            // Room dropdown
+            const roomDropdown = document.querySelector('.room-dropdown');
+            if (roomDropdown) {
+                roomDropdown.addEventListener('change', function(e) {
+                    currentRoom = e.target.value;
+                    renderDevicesGrid();
+                });
+            }
+
+            // Notification event handlers
+            const notificationBell = document.getElementById('notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    renderNotificationPopup();
+                });
+            }
+
+            const closeNotificationBtn = document.getElementById('close-notification-popup');
+            if (closeNotificationBtn) {
+                closeNotificationBtn.addEventListener('click', function() {
+                    closeNotificationPopup();
+                });
+            }
+            
+            // Handle custom location dropdown
+            const customDropdown = document.getElementById('custom-location-dropdown');
+            const dropdownHeader = document.getElementById('dropdown-header');
+            const dropdownOptions = document.getElementById('dropdown-options');
+            const selectedLocationSpan = document.getElementById('selected-location');
+            
+            if (dropdownHeader && dropdownOptions) {
+                // Toggle dropdown on header click
+                dropdownHeader.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    customDropdown.classList.toggle('open');
+                });
+                
+                // Handle option selection
+                dropdownOptions.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('dropdown-option')) {
+                        const value = e.target.getAttribute('data-value');
+                        const text = e.target.textContent;
+                        
+                        // Update selected location
+                        selectedLocationSpan.textContent = text;
+                        
+                        // Update selected state
+                        dropdownOptions.querySelectorAll('.dropdown-option').forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                        e.target.classList.add('selected');
+                        
+                        // Close dropdown
+                        customDropdown.classList.remove('open');
+                        
+                        // Navigate to location-view.html with the selected location
+                        window.location.href = `location-view.html?location=${encodeURIComponent(text)}`;
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!customDropdown.contains(e.target)) {
+                        customDropdown.classList.remove('open');
+                    }
+                });
+                
+                // Set initial selected state
+                const initialOption = dropdownOptions.querySelector('[data-value="home"]');
+                if (initialOption) {
+                    initialOption.classList.add('selected');
+                }
+            }
+
+            // Device modal event handlers
+            document.getElementById('close-device-modal').addEventListener('click', closeDeviceModal);
+            document.getElementById('close-sensor-modal').addEventListener('click', closeSensorModal);
+            document.getElementById('cancel-device-btn').addEventListener('click', closeDeviceModal);
+            
+            // Device form submission
+            document.getElementById('device-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!editingDevice) return;
+                
+                editingDevice.DeviceName = document.getElementById('modal-device-name').value;
+                editingDevice.DeviceType = document.getElementById('modal-device-type').value;
+                editingDevice.Location = document.getElementById('modal-device-location').value;
+                editingDevice.Status = document.getElementById('modal-device-status').value;
+                
+                closeDeviceModal();
+                renderDevicesGrid();
+            });
+            
+            // Delete device
+            document.getElementById('delete-device-btn').addEventListener('click', function() {
+                if (!editingDevice) return;
+                
+                if (confirm(`Are you sure you want to delete ${editingDevice.DeviceName}?`)) {
+                    const deviceIndex = devices.findIndex(d => d.DeviceID === editingDevice.DeviceID);
+                    if (deviceIndex > -1) {
+                        devices.splice(deviceIndex, 1);
+                    }
+                    closeDeviceModal();
+                    renderDevicesGrid();
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

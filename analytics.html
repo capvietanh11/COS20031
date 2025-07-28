@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHome Analytics</title>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .analytics-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .analytics-title {
+            font-size: 32px;
+            color: #2c3e50;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .analytics-subtitle {
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 400;
+            margin-top: 8px;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            background: #fff;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .filter-btn:hover {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        /* Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .analytics-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analytics-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .analytics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #d0b3f9;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            font-size: 20px;
+            color: #d0b3f9;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d0b3f9;
+            margin-bottom: 8px;
+        }
+
+        .card-change {
+            font-size: 14px;
+            color: #28a745;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-change.negative {
+            color: #dc3545;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+            margin-top: 16px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d0b3f9;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        /* Device List */
+        .device-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .device-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #f0f2f5;
+            transition: background-color 0.2s;
+        }
+
+        .device-item:hover {
+            background: #f8f9fa;
+        }
+
+        .device-item:last-child {
+            border-bottom: none;
+        }
+
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .device-icon {
+            font-size: 20px;
+            color: #d0b3f9;
+        }
+
+        .device-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .device-details p {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .device-usage {
+            text-align: right;
+        }
+
+        .usage-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .usage-unit {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* Event Log */
+        .event-log {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid #f0f2f5;
+            transition: background-color 0.2s;
+        }
+
+        .event-item:hover {
+            background: #f8f9fa;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-icon {
+            font-size: 16px;
+            color: #d0b3f9;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-description {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .event-time {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* Security Access */
+        .access-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #f0f2f5;
+            transition: background-color 0.2s;
+        }
+
+        .access-item:hover {
+            background: #f8f9fa;
+        }
+
+        .access-item:last-child {
+            border-bottom: none;
+        }
+
+        .access-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .access-status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .access-status.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Notification Popup Styles */
+        .notification-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.1);
+            width: 450px;
+            max-width: 90vw;
+            max-height: 70vh;
+            overflow: hidden;
+            border: 1px solid #f0f2f5;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .notification-popup.show {
+            display: block;
+        }
+
+        .notification-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .notification-popup-header span {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-popup-header span::before {
+            content: '🔔';
+            font-size: 16px;
+        }
+
+        .notification-popup-header button {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-popup-header button:hover {
+            background: #d0b3f9;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #d0b3f9;
+            border-radius: 3px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background: #c19bf8;
+        }
+
+        .notification-list li {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .notification-list li:hover {
+            background: #f8f9fa;
+            transform: translateX(4px);
+        }
+
+        .notification-list li:last-child {
+            border-bottom: none;
+        }
+
+        .notification-list li.unread {
+            background: linear-gradient(135deg, #f0f8ff 0%, #f8f9fa 100%);
+            border-left: 4px solid #d0b3f9;
+        }
+
+        .notification-list li.unread::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #d0b3f9;
+            border-radius: 50%;
+        }
+
+        .notification-list li:not(.unread) {
+            background: #ffffff;
+        }
+
+        .notification-content {
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        .notification-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification-status.unread {
+            background: #d0b3f9;
+            color: #ffffff;
+        }
+
+        .notification-status.read {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        /* Fix for notification bell text hiding when collapsed */
+        .sidebar.collapsed .notification-bell span:nth-child(2) {
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Custom dropdown that opens upward */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-header {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-header:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 4px;
+        }
+
+        .custom-dropdown.open .dropdown-options {
+            max-height: 200px;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-option.selected {
+            background-color: #d0b3f9;
+            color: #ffffff;
+        }
+
+        /* Collapsed sidebar adjustments */
+        .sidebar.collapsed .dropdown-header {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .sidebar.collapsed .dropdown-options {
+            font-size: 12px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                padding: 16px;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+            
+            .time-filter {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reusable Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle">◀</button>
+        <div class="sidebar-header">
+            <div class="sidebar-logo-container">
+                <div class="sidebar-logo-img">S</div>
+                <span class="sidebar-logo-text">SmartHome</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="overview.html"><span>📋</span><span>Overview</span></a></li>
+                <li><a href="dashboard.html"><span>🖥️</span><span>Dashboard</span></a></li>
+                <li><a href="schedule.html"><span>📅</span><span>Schedule</span></a></li>
+                <li class="active"><a href="analytics.html"><span>📈</span><span>Analytics</span></a></li>
+                <li><a href="settings.html"><span>⚙️</span><span>Settings</span></a></li>
+                                        <li><a href="#" onclick="logout()"><span>🔓</span><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-location-select">
+            <div class="custom-dropdown" id="custom-location-dropdown">
+                <div class="dropdown-header" id="dropdown-header">
+                    <span id="selected-location">Your Home</span>
+                    <span class="dropdown-arrow">▲</span>
+                </div>
+                <div class="dropdown-options" id="dropdown-options">
+                    <div class="dropdown-option" data-value="home">Your Home</div>
+                    <div class="dropdown-option" data-value="parent">Your Parent Home</div>
+                    <div class="dropdown-option" data-value="office">Your Office</div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <span id="notification-bell" class="notification-bell">
+                <span>🔔</span><span>Notifications</span>
+                <span id="notification-badge" class="notification-badge" style="display:none;"></span>
+            </span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Analytics Header -->
+            <div class="analytics-header">
+                <div>
+                    <h1 class="analytics-title">Analytics Dashboard</h1>
+                    <p class="analytics-subtitle">Monitor your smart home performance and insights</p>
+                </div>
+                <div class="time-filter">
+                    <button class="filter-btn active" onclick="setTimeFilter('7d')">7 Days</button>
+                    <button class="filter-btn" onclick="setTimeFilter('30d')">30 Days</button>
+                    <button class="filter-btn" onclick="setTimeFilter('90d')">90 Days</button>
+                </div>
+            </div>
+
+            <!-- Analytics Grid -->
+            <div class="analytics-grid">
+                <!-- Energy Usage Overview -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">⚡</span>
+                            Energy Usage
+                        </div>
+                    </div>
+                    <div class="card-value" id="total-energy">0 kWh</div>
+                    <div class="card-change" id="energy-change">
+                        <span>↗</span> +12.5%
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="energy-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Device Usage Statistics -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">📱</span>
+                            Device Usage
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="active-devices">0</div>
+                            <div class="stat-label">Active Devices</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-devices">0</div>
+                            <div class="stat-label">Total Devices</div>
+                        </div>
+                    </div>
+                    <div class="device-list" id="top-devices-list">
+                        <!-- Top devices will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Security Analytics -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🔒</span>
+                            Security Analytics
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="security-events">0</div>
+                            <div class="stat-label">Security Events</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="failed-attempts">0</div>
+                            <div class="stat-label">Failed Attempts</div>
+                        </div>
+                    </div>
+                    <div class="event-log" id="security-access-list">
+                        <!-- Security events will be populated here -->
+                    </div>
+                </div>
+
+                <!-- User Activity -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">👥</span>
+                            User Activity
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="user-controls">0</div>
+                            <div class="stat-label">User Controls</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="automation-rules">0</div>
+                            <div class="stat-label">Active Rules</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="user-activity-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Event Log Summary -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">📝</span>
+                            Event Log
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-events">0</div>
+                            <div class="stat-label">Total Events</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="event-types">0</div>
+                            <div class="stat-label">Event Types</div>
+                        </div>
+                    </div>
+                    <div class="event-log" id="recent-events-list">
+                        <!-- Recent events will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Device Health -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-icon">🏥</span>
+                            Device Health
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="healthy-devices">0</div>
+                            <div class="stat-label">Healthy</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="warning-devices">0</div>
+                            <div class="stat-label">Warnings</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="device-health-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Popup -->
+    <div id="notification-popup" class="notification-popup">
+        <div class="notification-popup-header">
+            <span>Notifications</span>
+            <button id="close-notification-popup">✖</button>
+        </div>
+        <ul id="notification-list" class="notification-list"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/mock-data.js"></script>
+    <link rel="stylesheet" href="css/chatbot.css">
+    <script src="chatbot.js"></script>
+    <script>
+        // Global variables
+        let currentTimeFilter = '7d';
+        let charts = {};
+
+        // Logout function
+        function logout() {
+            // Clear login state
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            
+            // Show logout message
+            alert('You have been logged out successfully!');
+            
+            // Redirect to signin page
+            window.location.href = 'signin.html';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Analytics page loaded');
+            initializeAnalytics();
+            setupEventListeners();
+        });
+
+        function initializeAnalytics() {
+            updateAnalyticsData();
+            createCharts();
+            renderNotificationBadge();
+        }
+
+        function updateAnalyticsData() {
+            updateEnergyUsage();
+            updateDeviceUsage();
+            updateSecurityAnalytics();
+            updateUserActivity();
+            updateEventLog();
+            updateDeviceHealth();
+        }
+
+        function updateEnergyUsage() {
+            const totalEnergy = devices.reduce((sum, device) => sum + (device.EnergyUsage || 0), 0);
+            const avgEnergy = totalEnergy / devices.length;
+            
+            document.getElementById('total-energy').textContent = `${totalEnergy.toFixed(1)} kWh`;
+            
+            // Calculate change (mock data)
+            const change = Math.random() * 20 - 10; // -10 to +10
+            const changeElement = document.getElementById('energy-change');
+            changeElement.innerHTML = `<span>${change > 0 ? '↗' : '↘'}</span> ${Math.abs(change).toFixed(1)}%`;
+            changeElement.className = `card-change ${change < 0 ? 'negative' : ''}`;
+        }
+
+        function updateDeviceUsage() {
+            const activeDevices = devices.filter(device => device.Status === 'On').length;
+            const totalDevices = devices.length;
+            
+            document.getElementById('active-devices').textContent = activeDevices;
+            document.getElementById('total-devices').textContent = totalDevices;
+            
+            // Top devices by energy usage
+            const topDevices = devices
+                .sort((a, b) => (b.EnergyUsage || 0) - (a.EnergyUsage || 0))
+                .slice(0, 5);
+            
+            const topDevicesList = document.getElementById('top-devices-list');
+            topDevicesList.innerHTML = topDevices.map(device => `
+                <div class="device-item">
+                    <div class="device-info">
+                        <span class="device-icon">${getDeviceIcon(device.DeviceType)}</span>
+                        <div class="device-details">
+                            <h4>${device.DeviceName}</h4>
+                            <p>${device.Location}</p>
+                        </div>
+                    </div>
+                    <div class="device-usage">
+                        <div class="usage-value">${(device.EnergyUsage || 0).toFixed(1)}</div>
+                        <div class="usage-unit">kWh/day</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateSecurityAnalytics() {
+            const securityEvents = securityAccesses.length;
+            const failedAttempts = securityAccesses.filter(access => access.Status === 'Failed').length;
+            
+            document.getElementById('security-events').textContent = securityEvents;
+            document.getElementById('failed-attempts').textContent = failedAttempts;
+            
+            // Recent security events
+            const recentSecurityEvents = securityAccesses
+                .sort((a, b) => new Date(b.AccessTime) - new Date(a.AccessTime))
+                .slice(0, 5);
+            
+            const securityList = document.getElementById('security-access-list');
+            securityList.innerHTML = recentSecurityEvents.map(access => `
+                <div class="access-item">
+                    <div class="device-info">
+                        <span class="device-icon">🔐</span>
+                        <div class="device-details">
+                            <h4>${access.AccessMethod} Access</h4>
+                            <p>${new Date(access.AccessTime).toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div class="access-status ${access.Status.toLowerCase()}">
+                        ${access.Status}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateUserActivity() {
+            // Create comprehensive user activity data
+            const userActivityData = [
+                { UserName: 'Alice', Action: 'Turned On Living Room Light', Time: '2024-06-20T14:30:00Z' },
+                { UserName: 'Bob', Action: 'Set Thermostat Temperature', Time: '2024-06-20T13:45:00Z' },
+                { UserName: 'Alice', Action: 'Turned Off Kitchen Camera', Time: '2024-06-20T12:20:00Z' },
+                { UserName: 'Carol', Action: 'Locked Front Door', Time: '2024-06-20T11:15:00Z' },
+                { UserName: 'Bob', Action: 'Adjusted Light Brightness', Time: '2024-06-20T10:30:00Z' },
+                { UserName: 'Alice', Action: 'Started Coffee Machine', Time: '2024-06-20T09:45:00Z' },
+                { UserName: 'Carol', Action: 'Turned On Security System', Time: '2024-06-20T08:20:00Z' },
+                { UserName: 'Bob', Action: 'Set Air Purifier Mode', Time: '2024-06-20T07:15:00Z' },
+                { UserName: 'Alice', Action: 'Opened Garage Door', Time: '2024-06-20T06:30:00Z' },
+                { UserName: 'Carol', Action: 'Turned Off All Lights', Time: '2024-06-20T05:45:00Z' }
+            ];
+            
+            const userControls = userActivityData.length;
+            const activeRules = automationRules.filter(rule => rule.IsActive).length;
+            
+            document.getElementById('user-controls').textContent = userControls;
+            document.getElementById('automation-rules').textContent = activeRules;
+        }
+
+        function updateEventLog() {
+            // Create comprehensive event log data
+            const eventLogs = [
+                { EventType: 'Device Turned On', CreateAt: '2024-06-20T14:30:00Z', DeviceName: 'Living Room Light' },
+                { EventType: 'Temperature Changed', CreateAt: '2024-06-20T13:45:00Z', DeviceName: 'Bedroom Thermostat' },
+                { EventType: 'Motion Detected', CreateAt: '2024-06-20T12:20:00Z', DeviceName: 'Kitchen Camera' },
+                { EventType: 'Security Alert', CreateAt: '2024-06-20T11:15:00Z', DeviceName: 'Entryway Camera' },
+                { EventType: 'Device Turned Off', CreateAt: '2024-06-20T10:30:00Z', DeviceName: 'Garage Door Controller' },
+                { EventType: 'Automation Triggered', CreateAt: '2024-06-20T09:45:00Z', DeviceName: 'Living Room Light' },
+                { EventType: 'User Login', CreateAt: '2024-06-20T08:20:00Z', DeviceName: 'System' },
+                { EventType: 'Schedule Executed', CreateAt: '2024-06-20T07:15:00Z', DeviceName: 'Bedroom Thermostat' },
+                { EventType: 'Device Error', CreateAt: '2024-06-20T06:30:00Z', DeviceName: 'Laundry Room Plug' },
+                { EventType: 'Backup Completed', CreateAt: '2024-06-20T05:45:00Z', DeviceName: 'System' }
+            ];
+            
+            const totalEvents = eventLogs.length;
+            const eventTypes = [...new Set(eventLogs.map(event => event.EventType))].length;
+            
+            document.getElementById('total-events').textContent = totalEvents;
+            document.getElementById('event-types').textContent = eventTypes;
+            
+            // Recent events
+            const recentEvents = eventLogs
+                .sort((a, b) => new Date(b.CreateAt) - new Date(a.CreateAt))
+                .slice(0, 5);
+            
+            const eventsList = document.getElementById('recent-events-list');
+            eventsList.innerHTML = recentEvents.map(event => `
+                <div class="event-item">
+                    <span class="event-icon">📝</span>
+                    <div class="event-details">
+                        <div class="event-description">${event.EventType}</div>
+                        <div class="event-time">${new Date(event.CreateAt).toLocaleString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateDeviceHealth() {
+            // Create comprehensive device health data
+            const deviceHealthData = [
+                { DeviceName: 'Living Room Light', Status: 'Healthy', LastCheck: '2024-06-20T14:30:00Z' },
+                { DeviceName: 'Bedroom Thermostat', Status: 'Warning', LastCheck: '2024-06-20T13:45:00Z' },
+                { DeviceName: 'Kitchen Camera', Status: 'Healthy', LastCheck: '2024-06-20T12:20:00Z' },
+                { DeviceName: 'Garage Sensor', Status: 'Healthy', LastCheck: '2024-06-20T11:15:00Z' },
+                { DeviceName: 'Office Plug', Status: 'Error', LastCheck: '2024-06-20T10:30:00Z' },
+                { DeviceName: 'Hallway Light', Status: 'Healthy', LastCheck: '2024-06-20T09:45:00Z' },
+                { DeviceName: 'Bathroom Heater', Status: 'Warning', LastCheck: '2024-06-20T08:20:00Z' },
+                { DeviceName: 'Porch Camera', Status: 'Healthy', LastCheck: '2024-06-20T07:15:00Z' },
+                { DeviceName: 'Dining Room Light', Status: 'Healthy', LastCheck: '2024-06-20T06:30:00Z' },
+                { DeviceName: 'Kids Room Nightlight', Status: 'Healthy', LastCheck: '2024-06-20T05:45:00Z' },
+                { DeviceName: 'Master Bedroom AC', Status: 'Healthy', LastCheck: '2024-06-20T04:30:00Z' },
+                { DeviceName: 'Guest Room Heater', Status: 'Warning', LastCheck: '2024-06-20T03:15:00Z' },
+                { DeviceName: 'Laundry Room Plug', Status: 'Error', LastCheck: '2024-06-20T02:20:00Z' },
+                { DeviceName: 'Backyard Sensor', Status: 'Healthy', LastCheck: '2024-06-20T01:45:00Z' },
+                { DeviceName: 'Garage Door Controller', Status: 'Healthy', LastCheck: '2024-06-20T00:30:00Z' }
+            ];
+            
+            const healthyDevices = deviceHealthData.filter(device => device.Status === 'Healthy').length;
+            const warningDevices = deviceHealthData.filter(device => device.Status === 'Warning').length;
+            const errorDevices = deviceHealthData.filter(device => device.Status === 'Error').length;
+            
+            document.getElementById('healthy-devices').textContent = healthyDevices;
+            document.getElementById('warning-devices').textContent = warningDevices + errorDevices;
+        }
+
+        function getDeviceIcon(deviceType) {
+            const icons = {
+                'Light': '💡',
+                'Thermostat': '🌡️',
+                'Camera': '📹',
+                'Sensor': '📡',
+                'Plug': '🔌',
+                'Speaker': '🔊',
+                'TV': '📺',
+                'Fan': '💨',
+                'Door Lock': '🔒',
+                'Curtain': '🪟',
+                'Air Purifier': '🌬️',
+                'Vacuum': '🤖',
+                'Refrigerator': '❄️',
+                'Washer': '🧺',
+                'Dryer': '🌪️',
+                'Oven': '🔥',
+                'Microwave': '📟',
+                'Router': '📶',
+                'Switch': '🔘',
+                'Alarm': '🚨',
+                'Blinds': '🪟',
+                'Projector': '📽️',
+                'Other': '⚙️'
+            };
+            return icons[deviceType] || '⚙️';
+        }
+
+        function createCharts() {
+            createEnergyChart();
+            createUserActivityChart();
+            createDeviceHealthChart();
+        }
+
+        function createEnergyChart() {
+            const ctx = document.getElementById('energy-chart').getContext('2d');
+            
+            // Generate realistic energy data with daily patterns
+            const labels = [];
+            const data = [];
+            const today = new Date();
+            
+            // Create 7 days of realistic energy usage data
+            const energyPattern = [45, 52, 48, 55, 62, 58, 49]; // Realistic daily variations
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                data.push(energyPattern[6-i] + Math.random() * 10 - 5); // Add some variation
+            }
+            
+            charts.energy = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Energy Usage (kWh)',
+                        data: data,
+                        borderColor: '#d0b3f9',
+                        backgroundColor: 'rgba(208, 179, 249, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#d0b3f9',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#2c3e50',
+                            bodyColor: '#2c3e50',
+                            borderColor: '#d0b3f9',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Energy Usage: ${context.parsed.y.toFixed(1)} kWh`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e9ecef',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        function createUserActivityChart() {
+            const ctx = document.getElementById('user-activity-chart').getContext('2d');
+            
+            // Create realistic user activity data
+            const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const data = [12, 18, 15, 22, 25, 30, 16]; // Realistic weekly pattern
+            
+            charts.userActivity = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'User Controls',
+                        data: data,
+                        backgroundColor: '#d0b3f9',
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#2c3e50',
+                            bodyColor: '#2c3e50',
+                            borderColor: '#d0b3f9',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `User Controls: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e9ecef',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDeviceHealthChart() {
+            const ctx = document.getElementById('device-health-chart').getContext('2d');
+            
+            // Use the device health data from updateDeviceHealth function
+            const deviceHealthData = [
+                { DeviceName: 'Living Room Light', Status: 'Healthy', LastCheck: '2024-06-20T14:30:00Z' },
+                { DeviceName: 'Bedroom Thermostat', Status: 'Warning', LastCheck: '2024-06-20T13:45:00Z' },
+                { DeviceName: 'Kitchen Camera', Status: 'Healthy', LastCheck: '2024-06-20T12:20:00Z' },
+                { DeviceName: 'Garage Sensor', Status: 'Healthy', LastCheck: '2024-06-20T11:15:00Z' },
+                { DeviceName: 'Office Plug', Status: 'Error', LastCheck: '2024-06-20T10:30:00Z' },
+                { DeviceName: 'Hallway Light', Status: 'Healthy', LastCheck: '2024-06-20T09:45:00Z' },
+                { DeviceName: 'Bathroom Heater', Status: 'Warning', LastCheck: '2024-06-20T08:20:00Z' },
+                { DeviceName: 'Porch Camera', Status: 'Healthy', LastCheck: '2024-06-20T07:15:00Z' },
+                { DeviceName: 'Dining Room Light', Status: 'Healthy', LastCheck: '2024-06-20T06:30:00Z' },
+                { DeviceName: 'Kids Room Nightlight', Status: 'Healthy', LastCheck: '2024-06-20T05:45:00Z' },
+                { DeviceName: 'Master Bedroom AC', Status: 'Healthy', LastCheck: '2024-06-20T04:30:00Z' },
+                { DeviceName: 'Guest Room Heater', Status: 'Warning', LastCheck: '2024-06-20T03:15:00Z' },
+                { DeviceName: 'Laundry Room Plug', Status: 'Error', LastCheck: '2024-06-20T02:20:00Z' },
+                { DeviceName: 'Backyard Sensor', Status: 'Healthy', LastCheck: '2024-06-20T01:45:00Z' },
+                { DeviceName: 'Garage Door Controller', Status: 'Healthy', LastCheck: '2024-06-20T00:30:00Z' }
+            ];
+            
+            const healthyDevices = deviceHealthData.filter(device => device.Status === 'Healthy').length;
+            const warningDevices = deviceHealthData.filter(device => device.Status === 'Warning').length;
+            const errorDevices = deviceHealthData.filter(device => device.Status === 'Error').length;
+            
+            charts.deviceHealth = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Healthy', 'Warnings', 'Errors'],
+                    datasets: [{
+                        data: [healthyDevices, warningDevices, errorDevices],
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#2c3e50',
+                            bodyColor: '#2c3e50',
+                            borderColor: '#d0b3f9',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const labels = ['Healthy', 'Warnings', 'Errors'];
+                                    return `${labels[context.dataIndex]}: ${context.parsed}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setTimeFilter(filter) {
+            currentTimeFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update data based on filter
+            updateAnalyticsData();
+        }
+
+        // Notification functions
+        function getUnreadNotificationCount() {
+            return notifications.filter(n => n.Status === 'Unread').length;
+        }
+
+        function renderNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const count = getUnreadNotificationCount();
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderNotificationPopup() {
+            const popup = document.getElementById('notification-popup');
+            const list = document.getElementById('notification-list');
+            list.innerHTML = '';
+            
+            // Create more realistic notification messages
+            const notificationMessages = [
+                { message: 'Front door unlocked at 2:30 PM', time: '2 min ago', status: 'Unread' },
+                { message: 'Motion detected in kitchen camera', time: '5 min ago', status: 'Unread' },
+                { message: 'Thermostat temperature adjusted to 22°C', time: '12 min ago', status: 'Read' },
+                { message: 'Living room lights turned on automatically', time: '18 min ago', status: 'Read' },
+                { message: 'Security system armed for the night', time: '25 min ago', status: 'Read' },
+                { message: 'Coffee machine started brewing', time: '32 min ago', status: 'Read' },
+                { message: 'Garage door opened remotely', time: '45 min ago', status: 'Read' },
+                { message: 'Air purifier filter needs replacement', time: '1 hour ago', status: 'Unread' }
+            ];
+            
+            notificationMessages.forEach(n => {
+                const li = document.createElement('li');
+                li.className = n.status === 'Unread' ? 'unread' : '';
+                li.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${n.time}</div>
+                    </div>
+                    <div class="notification-status ${n.status.toLowerCase()}">${n.status}</div>
+                `;
+                list.appendChild(li);
+            });
+            
+            popup.classList.add('show');
+            renderNotificationBadge();
+        }
+
+        function closeNotificationPopup() {
+            document.getElementById('notification-popup').classList.remove('show');
+        }
+
+        function setupEventListeners() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const container = document.querySelector('.container');
+            
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                container.classList.add('sidebar-collapsed');
+                sidebarToggle.textContent = '▶';
+            }
+            
+            if (sidebarToggle && sidebar && container) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    container.classList.toggle('sidebar-collapsed');
+                    
+                    // Save sidebar state to localStorage
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    
+                    // Update toggle button text
+                    this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                });
+            }
+
+            // Notification event handlers
+            const notificationBell = document.getElementById('notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    renderNotificationPopup();
+                });
+            }
+
+            const closeNotificationBtn = document.getElementById('close-notification-popup');
+            if (closeNotificationBtn) {
+                closeNotificationBtn.addEventListener('click', function() {
+                    closeNotificationPopup();
+                });
+            }
+            
+            // Handle custom location dropdown
+            const customDropdown = document.getElementById('custom-location-dropdown');
+            const dropdownHeader = document.getElementById('dropdown-header');
+            const dropdownOptions = document.getElementById('dropdown-options');
+            const selectedLocationSpan = document.getElementById('selected-location');
+            
+            if (dropdownHeader && dropdownOptions) {
+                // Toggle dropdown on header click
+                dropdownHeader.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    customDropdown.classList.toggle('open');
+                });
+                
+                // Handle option selection
+                dropdownOptions.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('dropdown-option')) {
+                        const value = e.target.getAttribute('data-value');
+                        const text = e.target.textContent;
+                        
+                        // Update selected location
+                        selectedLocationSpan.textContent = text;
+                        
+                        // Update selected state
+                        dropdownOptions.querySelectorAll('.dropdown-option').forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                        e.target.classList.add('selected');
+                        
+                        // Close dropdown
+                        customDropdown.classList.remove('open');
+                        
+                        // Navigate to location-view.html with the selected location
+                        window.location.href = `location-view.html?location=${encodeURIComponent(text)}`;
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!customDropdown.contains(e.target)) {
+                        customDropdown.classList.remove('open');
+                    }
+                });
+                
+                // Set initial selected state
+                const initialOption = dropdownOptions.querySelector('[data-value="home"]');
+                if (initialOption) {
+                    initialOption.classList.add('selected');
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

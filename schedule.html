@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHome Schedule</title>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .schedule-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .schedule-title {
+            font-size: 32px;
+            color: #2c3e50;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .schedule-subtitle {
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 400;
+            margin-top: 8px;
+        }
+
+        .add-event-btn {
+            background: #d0b3f9;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(208, 179, 249, 0.2);
+        }
+
+        .add-event-btn:hover {
+            background: #c19bf8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(208, 179, 249, 0.3);
+        }
+
+        /* Schedule Grid */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .schedule-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #f0f2f5;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .schedule-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .schedule-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #d0b3f9;
+        }
+
+        .event-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .event-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .event-icon {
+            font-size: 24px;
+            color: #d0b3f9;
+        }
+
+        .event-time {
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .event-description {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .event-devices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .device-tag {
+            background: #f0f8ff;
+            color: #d0b3f9;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #e0f2ff;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-tag {
+            background: #fff0f6;
+            color: #d0b3f9;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #ffe0f0;
+        }
+
+        .event-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .event-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .event-btn.edit {
+            background: #d0b3f9;
+            color: #fff;
+        }
+
+        .event-btn.edit:hover {
+            background: #c19bf8;
+        }
+
+        .event-btn.delete {
+            background: #f8f9fa;
+            color: #dc3545;
+            border: 1px solid #e9ecef;
+        }
+
+        .event-btn.delete:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6c757d;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .empty-description {
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            width: 500px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 1px solid #f0f2f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px;
+            border-bottom: 1px solid #f0f2f5;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #2c3e50;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+            max-height: 60vh;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #d0b3f9;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #d0b3f9;
+        }
+
+        .device-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .device-checkbox:hover {
+            background: #f8f9fa;
+            border-color: #d0b3f9;
+        }
+
+        .device-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #d0b3f9;
+        }
+
+        .device-info {
+            flex: 1;
+        }
+
+        .device-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .device-location {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .device-selection-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .action-selection-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding: 24px;
+            border-top: 1px solid #f0f2f5;
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn.primary {
+            background: #d0b3f9;
+            color: #fff;
+            border-color: #d0b3f9;
+        }
+
+        .modal-btn.primary:hover {
+            background: #c19bf8;
+        }
+
+        .modal-btn.secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #e9ecef;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #e9ecef;
+        }
+
+        .modal-btn.danger {
+            background: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+        }
+
+        .modal-btn.danger:hover {
+            background: #c82333;
+        }
+
+        /* Notification Popup Styles */
+        .notification-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.1);
+            width: 450px;
+            max-width: 90vw;
+            max-height: 70vh;
+            overflow: hidden;
+            border: 1px solid #f0f2f5;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .notification-popup.show {
+            display: block;
+        }
+
+        .notification-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
+        .notification-popup-header span {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-popup-header span::before {
+            content: '🔔';
+            font-size: 16px;
+        }
+
+        .notification-popup-header button {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-popup-header button:hover {
+            background: #d0b3f9;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #d0b3f9;
+            border-radius: 3px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background: #c19bf8;
+        }
+
+        .notification-list li {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .notification-list li:hover {
+            background: #f8f9fa;
+            transform: translateX(4px);
+        }
+
+        .notification-list li:last-child {
+            border-bottom: none;
+        }
+
+        .notification-list li.unread {
+            background: linear-gradient(135deg, #f0f8ff 0%, #f8f9fa 100%);
+            border-left: 4px solid #d0b3f9;
+        }
+
+        .notification-list li.unread::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #d0b3f9;
+            border-radius: 50%;
+        }
+
+        .notification-content {
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        .notification-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification-status.unread {
+            background: #d0b3f9;
+            color: #ffffff;
+        }
+
+        .notification-status.read {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        /* Fix for notification bell text hiding when collapsed */
+        .sidebar.collapsed .notification-bell span:nth-child(2) {
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Custom dropdown that opens upward */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-header {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-header:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s ease;
+        }
+
+        .custom-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 4px;
+        }
+
+        .custom-dropdown.open .dropdown-options {
+            max-height: 200px;
+        }
+
+        .dropdown-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-option.selected {
+            background-color: #d0b3f9;
+            color: #ffffff;
+        }
+
+        /* Collapsed sidebar adjustments */
+        .sidebar.collapsed .dropdown-header {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .sidebar.collapsed .dropdown-options {
+            font-size: 12px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                padding: 16px;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reusable Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle">◀</button>
+        <div class="sidebar-header">
+            <div class="sidebar-logo-container">
+                <div class="sidebar-logo-img">S</div>
+                <span class="sidebar-logo-text">SmartHome</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="overview.html"><span>📋</span><span>Overview</span></a></li>
+                <li><a href="dashboard.html"><span>🖥️</span><span>Dashboard</span></a></li>
+                <li class="active"><a href="schedule.html"><span>📅</span><span>Schedule</span></a></li>
+                <li><a href="analytics.html"><span>📈</span><span>Analytics</span></a></li>
+                <li><a href="settings.html"><span>⚙️</span><span>Settings</span></a></li>
+                                        <li><a href="#" onclick="logout()"><span>🔓</span><span>Log Out</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-location-select">
+            <div class="custom-dropdown" id="custom-location-dropdown">
+                <div class="dropdown-header" id="dropdown-header">
+                    <span id="selected-location">Your Home</span>
+                    <span class="dropdown-arrow">▲</span>
+                </div>
+                <div class="dropdown-options" id="dropdown-options">
+                    <div class="dropdown-option" data-value="home">Your Home</div>
+                    <div class="dropdown-option" data-value="parent">Your Parent Home</div>
+                    <div class="dropdown-option" data-value="office">Your Office</div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <span id="notification-bell" class="notification-bell">
+                <span>🔔</span><span>Notifications</span>
+                <span id="notification-badge" class="notification-badge" style="display:none;"></span>
+            </span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Schedule Header -->
+            <div class="schedule-header">
+                <div>
+                    <h1 class="schedule-title">Habit Schedule</h1>
+                    <p class="schedule-subtitle">Manage your smart home automation routines</p>
+                </div>
+                <button class="add-event-btn" onclick="openAddEventModal()">
+                    <span>+</span> Add Event
+                </button>
+            </div>
+
+            <!-- Schedule Grid -->
+            <div class="schedule-grid" id="schedule-grid">
+                <!-- Schedule cards will be populated by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-icon">⏰</div>
+                <h3 class="empty-title">No Events Scheduled</h3>
+                <p class="empty-description">Create your first automation event to get started</p>
+                <button class="add-event-btn" onclick="openAddEventModal()">
+                    <span>+</span> Add Your First Event
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="add-event-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Event</h3>
+                <button class="close-btn" onclick="closeAddEventModal()">✖</button>
+            </div>
+            <form id="add-event-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Event Name</label>
+                        <input type="text" class="form-input" id="event-name" placeholder="e.g., Morning Routine" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-input" id="event-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="event-description" rows="3" placeholder="Describe what this event does..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Devices</label>
+                        <div id="device-selection" class="device-selection-container">
+                            <!-- Device checkboxes will be populated here -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Actions</label>
+                        <div id="action-selection" class="action-selection-container">
+                            <!-- Action checkboxes will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn secondary" onclick="closeAddEventModal()">Cancel</button>
+                    <button type="submit" class="modal-btn primary">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="edit-event-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Event</h3>
+                <button class="close-btn" onclick="closeEditEventModal()">✖</button>
+            </div>
+            <form id="edit-event-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Event Name</label>
+                        <input type="text" class="form-input" id="edit-event-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-input" id="edit-event-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="edit-event-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Devices</label>
+                        <div id="edit-device-selection" class="device-selection-container">
+                            <!-- Device checkboxes will be populated here -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Actions</label>
+                        <div id="edit-action-selection" class="action-selection-container">
+                            <!-- Action checkboxes will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn danger" onclick="deleteCurrentEvent()">Delete</button>
+                    <button type="button" class="modal-btn secondary" onclick="closeEditEventModal()">Cancel</button>
+                    <button type="submit" class="modal-btn primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Popup -->
+    <div id="notification-popup" class="notification-popup">
+        <div class="notification-popup-header">
+            <span>Notifications</span>
+            <button id="close-notification-popup">✖</button>
+        </div>
+        <ul id="notification-list" class="notification-list"></ul>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <link rel="stylesheet" href="css/chatbot.css">
+    <script src="chatbot.js"></script>
+    <script>
+        // Global variables
+        let scheduleEvents = [];
+        let currentEditingEvent = null;
+
+        // Logout function
+        function logout() {
+            // Clear login state
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            
+            // Show logout message
+            alert('You have been logged out successfully!');
+            
+            // Redirect to signin page
+            window.location.href = 'signin.html';
+        }
+
+        // Available actions based on device types
+        const actions = [
+            { ActionName: 'Turn On', Description: 'Activate the device' },
+            { ActionName: 'Turn Off', Description: 'Deactivate the device' },
+            { ActionName: 'Set Brightness', Description: 'Adjust light brightness (0-100%)' },
+            { ActionName: 'Set Color', Description: 'Change light color' },
+            { ActionName: 'Set Temperature', Description: 'Adjust thermostat temperature' },
+            { ActionName: 'Lock', Description: 'Secure door or lock' },
+            { ActionName: 'Unlock', Description: 'Release door or lock' },
+            { ActionName: 'Start Timer', Description: 'Begin countdown timer' },
+            { ActionName: 'Stop Timer', Description: 'Cancel countdown timer' },
+            { ActionName: 'Set Volume', Description: 'Adjust speaker volume' },
+            { ActionName: 'Mute', Description: 'Silence audio output' },
+            { ActionName: 'Unmute', Description: 'Restore audio output' },
+            { ActionName: 'Set Fan Speed', Description: 'Adjust fan speed level' },
+            { ActionName: 'Set Curtain Position', Description: 'Open/close curtains' },
+            { ActionName: 'Set Air Purifier Mode', Description: 'Change air purifier settings' },
+            { ActionName: 'Activate Camera', Description: 'Start camera recording' },
+            { ActionName: 'Deactivate Camera', Description: 'Stop camera recording' },
+            { ActionName: 'Set TV Channel', Description: 'Change TV channel' },
+            { ActionName: 'Set TV Source', Description: 'Change TV input source' },
+            { ActionName: 'Reset Device', Description: 'Restore device to default settings' }
+        ];
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Schedule page loaded');
+            initializeSchedule();
+            setupEventListeners();
+        });
+
+        function initializeSchedule() {
+            loadScheduleEvents();
+            renderScheduleEvents();
+            renderNotificationBadge();
+        }
+
+        function loadScheduleEvents() {
+            // Load from localStorage or use default events
+            const savedEvents = localStorage.getItem('scheduleEvents');
+            if (savedEvents) {
+                scheduleEvents = JSON.parse(savedEvents);
+            } else {
+                // Default events
+                scheduleEvents = [
+                    {
+                        id: 1,
+                        name: 'Morning Routine',
+                        time: '07:00',
+                        description: 'Turn on lights, start coffee machine, and adjust thermostat',
+                        devices: ['Living Room Light', 'Coffee Machine', 'Bedroom Thermostat'],
+                        actions: ['Turn On', 'Start', 'Set Temperature'],
+                        icon: '🌅'
+                    },
+                    {
+                        id: 2,
+                        name: 'Evening Wind Down',
+                        time: '21:00',
+                        description: 'Dim lights, lock doors, and set security system',
+                        devices: ['Living Room Light', 'Front Door Lock', 'Security Camera'],
+                        actions: ['Dim', 'Lock', 'Activate'],
+                        icon: '🌙'
+                    }
+                ];
+                saveScheduleEvents();
+            }
+        }
+
+        function saveScheduleEvents() {
+            localStorage.setItem('scheduleEvents', JSON.stringify(scheduleEvents));
+        }
+
+        function renderScheduleEvents() {
+            const scheduleGrid = document.getElementById('schedule-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            if (scheduleEvents.length === 0) {
+                scheduleGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            scheduleGrid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            scheduleGrid.innerHTML = scheduleEvents.map(event => `
+                <div class="schedule-card">
+                    <div class="event-header">
+                        <div class="event-title">
+                            <span class="event-icon">${event.icon}</span>
+                            ${event.name}
+                        </div>
+                        <div class="event-time">${formatTime(event.time)}</div>
+                    </div>
+                    <div class="event-description">${event.description}</div>
+                    <div class="event-devices">
+                        ${event.devices.map(device => `
+                            <span class="device-tag">${device}</span>
+                        `).join('')}
+                    </div>
+                    <div class="event-actions">
+                        ${event.actions ? event.actions.map(action => `
+                            <span class="action-tag">${action}</span>
+                        `).join('') : ''}
+                    </div>
+                    <div class="event-controls">
+                        <button class="event-btn edit" onclick="editEvent(${event.id})">Edit</button>
+                        <button class="event-btn delete" onclick="deleteEvent(${event.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function openAddEventModal() {
+            document.getElementById('add-event-modal').style.display = 'flex';
+            populateDeviceSelection('device-selection');
+            populateActionSelection('action-selection');
+        }
+
+        function closeAddEventModal() {
+            document.getElementById('add-event-modal').style.display = 'none';
+            document.getElementById('add-event-form').reset();
+        }
+
+        function openEditEventModal(eventId) {
+            const event = scheduleEvents.find(e => e.id === eventId);
+            if (!event) return;
+
+            currentEditingEvent = event;
+            
+            document.getElementById('edit-event-name').value = event.name;
+            document.getElementById('edit-event-time').value = event.time;
+            document.getElementById('edit-event-description').value = event.description;
+            
+            populateDeviceSelection('edit-device-selection', event.devices);
+            populateActionSelection('edit-action-selection', event.actions);
+            document.getElementById('edit-event-modal').style.display = 'flex';
+        }
+
+        function closeEditEventModal() {
+            document.getElementById('edit-event-modal').style.display = 'none';
+            currentEditingEvent = null;
+        }
+
+        function populateDeviceSelection(containerId, selectedDevices = []) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = devices.map(device => `
+                <label class="device-checkbox">
+                    <input type="checkbox" value="${device.DeviceName}" 
+                           ${selectedDevices.includes(device.DeviceName) ? 'checked' : ''}>
+                    <div class="device-info">
+                        <div class="device-name">${device.DeviceName}</div>
+                        <div class="device-location">${device.Location}</div>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        function getSelectedDevices(containerId) {
+            const container = document.getElementById(containerId);
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function populateActionSelection(containerId, selectedActions = []) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = actions.map(action => `
+                <label class="device-checkbox">
+                    <input type="checkbox" value="${action.ActionName}" 
+                           ${selectedActions.includes(action.ActionName) ? 'checked' : ''}>
+                    <div class="device-info">
+                        <div class="device-name">${action.ActionName}</div>
+                        <div class="device-location">${action.Description}</div>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        function getSelectedActions(containerId) {
+            const container = document.getElementById(containerId);
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function getEventIcon(eventName) {
+            const icons = {
+                'Morning': '🌅',
+                'Evening': '🌙',
+                'Night': '🌙',
+                'Bedtime': '🛏️',
+                'Wake': '🌅',
+                'Coffee': '☕',
+                'Security': '🔒',
+                'Light': '💡',
+                'Temperature': '🌡️',
+                'Clean': '🧹',
+                'Default': '⏰'
+            };
+
+            for (const [keyword, icon] of Object.entries(icons)) {
+                if (eventName.toLowerCase().includes(keyword.toLowerCase())) {
+                    return icon;
+                }
+            }
+            return icons.Default;
+        }
+
+        function addEvent(eventData) {
+            const newEvent = {
+                id: Date.now(),
+                name: eventData.name,
+                time: eventData.time,
+                description: eventData.description,
+                devices: eventData.devices,
+                actions: eventData.actions,
+                icon: getEventIcon(eventData.name)
+            };
+
+            scheduleEvents.push(newEvent);
+            saveScheduleEvents();
+            renderScheduleEvents();
+        }
+
+        function updateEvent(eventId, eventData) {
+            const eventIndex = scheduleEvents.findIndex(e => e.id === eventId);
+            if (eventIndex === -1) return;
+
+            scheduleEvents[eventIndex] = {
+                ...scheduleEvents[eventIndex],
+                name: eventData.name,
+                time: eventData.time,
+                description: eventData.description,
+                devices: eventData.devices,
+                actions: eventData.actions,
+                icon: getEventIcon(eventData.name)
+            };
+
+            saveScheduleEvents();
+            renderScheduleEvents();
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                scheduleEvents = scheduleEvents.filter(e => e.id !== eventId);
+                saveScheduleEvents();
+                renderScheduleEvents();
+            }
+        }
+
+        function deleteCurrentEvent() {
+            if (currentEditingEvent) {
+                deleteEvent(currentEditingEvent.id);
+                closeEditEventModal();
+            }
+        }
+
+        function editEvent(eventId) {
+            openEditEventModal(eventId);
+        }
+
+        // Notification functions
+        function getUnreadNotificationCount() {
+            return notifications.filter(n => n.Status === 'Unread').length;
+        }
+
+        function renderNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const count = getUnreadNotificationCount();
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderNotificationPopup() {
+            const popup = document.getElementById('notification-popup');
+            const list = document.getElementById('notification-list');
+            list.innerHTML = '';
+            
+            // Create more realistic notification messages
+            const notificationMessages = [
+                { message: 'Front door unlocked at 2:30 PM', time: '2 min ago', status: 'Unread' },
+                { message: 'Motion detected in kitchen camera', time: '5 min ago', status: 'Unread' },
+                { message: 'Thermostat temperature adjusted to 22°C', time: '12 min ago', status: 'Read' },
+                { message: 'Living room lights turned on automatically', time: '18 min ago', status: 'Read' },
+                { message: 'Security system armed for the night', time: '25 min ago', status: 'Read' },
+                { message: 'Coffee machine started brewing', time: '32 min ago', status: 'Read' },
+                { message: 'Garage door opened remotely', time: '45 min ago', status: 'Read' },
+                { message: 'Air purifier filter needs replacement', time: '1 hour ago', status: 'Unread' }
+            ];
+            
+            notificationMessages.forEach(n => {
+                const li = document.createElement('li');
+                li.className = n.status === 'Unread' ? 'unread' : '';
+                li.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-message">${n.message}</div>
+                        <div class="notification-time">${n.time}</div>
+                    </div>
+                    <div class="notification-status ${n.status.toLowerCase()}">${n.status}</div>
+                `;
+                list.appendChild(li);
+            });
+            
+            popup.classList.add('show');
+            renderNotificationBadge();
+        }
+
+        function closeNotificationPopup() {
+            document.getElementById('notification-popup').classList.remove('show');
+        }
+
+        function setupEventListeners() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const container = document.querySelector('.container');
+            
+            // Load sidebar state from localStorage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                container.classList.add('sidebar-collapsed');
+                sidebarToggle.textContent = '▶';
+            }
+            
+            if (sidebarToggle && sidebar && container) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    container.classList.toggle('sidebar-collapsed');
+                    
+                    // Save sidebar state to localStorage
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    
+                    // Update toggle button text
+                    this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                });
+            }
+
+            // Add event form submission
+            document.getElementById('add-event-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const eventData = {
+                    name: document.getElementById('event-name').value,
+                    time: document.getElementById('event-time').value,
+                    description: document.getElementById('event-description').value,
+                    devices: getSelectedDevices('device-selection'),
+                    actions: getSelectedActions('action-selection')
+                };
+
+                addEvent(eventData);
+                closeAddEventModal();
+            });
+
+            // Edit event form submission
+            document.getElementById('edit-event-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!currentEditingEvent) return;
+
+                const eventData = {
+                    name: document.getElementById('edit-event-name').value,
+                    time: document.getElementById('edit-event-time').value,
+                    description: document.getElementById('edit-event-description').value,
+                    devices: getSelectedDevices('edit-device-selection'),
+                    actions: getSelectedActions('edit-action-selection')
+                };
+
+                updateEvent(currentEditingEvent.id, eventData);
+                closeEditEventModal();
+            });
+
+            // Notification event handlers
+            const notificationBell = document.getElementById('notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    renderNotificationPopup();
+                });
+            }
+
+            const closeNotificationBtn = document.getElementById('close-notification-popup');
+            if (closeNotificationBtn) {
+                closeNotificationBtn.addEventListener('click', function() {
+                    closeNotificationPopup();
+                });
+            }
+            
+            // Handle custom location dropdown
+            const customDropdown = document.getElementById('custom-location-dropdown');
+            const dropdownHeader = document.getElementById('dropdown-header');
+            const dropdownOptions = document.getElementById('dropdown-options');
+            const selectedLocationSpan = document.getElementById('selected-location');
+            
+            if (dropdownHeader && dropdownOptions) {
+                // Toggle dropdown on header click
+                dropdownHeader.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    customDropdown.classList.toggle('open');
+                });
+                
+                // Handle option selection
+                dropdownOptions.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('dropdown-option')) {
+                        const value = e.target.getAttribute('data-value');
+                        const text = e.target.textContent;
+                        
+                        // Update selected location
+                        selectedLocationSpan.textContent = text;
+                        
+                        // Update selected state
+                        dropdownOptions.querySelectorAll('.dropdown-option').forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                        e.target.classList.add('selected');
+                        
+                        // Close dropdown
+                        customDropdown.classList.remove('open');
+                        
+                        // Navigate to location-view.html with the selected location
+                        window.location.href = `location-view.html?location=${encodeURIComponent(text)}`;
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!customDropdown.contains(e.target)) {
+                        customDropdown.classList.remove('open');
+                    }
+                });
+                
+                // Set initial selected state
+                const initialOption = dropdownOptions.querySelector('[data-value="home"]');
+                if (initialOption) {
+                    initialOption.classList.add('selected');
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

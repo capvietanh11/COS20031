@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Security - Location View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Left Panel - Device Controls */
+        .left-panel {
+            width: 350px;
+            background: #ffffff;
+            padding: 24px;
+            overflow-y: auto;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid #e9ecef;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+        }
+
+        .location-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-right: 16px;
+            color: #2c3e50;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .location-info h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .location-info .address {
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .room-filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .room-filter {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 16px;
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-filter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .room-filter:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .room-filter:hover::before {
+            left: 100%;
+        }
+
+        .room-filter.active {
+            background: #b393b4;
+            color: white;
+            box-shadow: 0 4px 16px rgba(179, 147, 180, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .room-filter.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(179, 147, 180, 0.4);
+        }
+
+        .device-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .device-count {
+            background: #e3f2fd;
+            color: #007bff;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .device-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .device-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .device-card.camera {
+            border-left: 4px solid #9ecbd7;
+        }
+
+        .device-card.lock {
+            border-left: 4px solid #ffc107;
+        }
+
+        .device-card.sensor {
+            border-left: 4px solid #96e8c3;
+        }
+
+        .device-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .device-schedule {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .schedule-icon {
+            color: #6f42c1;
+            font-size: 12px;
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-indicator.on {
+            background: #9ecbd7;
+        }
+
+        .status-indicator.off {
+            background: #dc3545;
+        }
+
+        .device-preview {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 10px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .device-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #7a7d6c;
+            margin-top: 8px;
+        }
+
+        .battery-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .battery-bar {
+            width: 30px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .battery-level {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .battery-level.high {
+            background: #4CAF50;
+        }
+
+        .battery-level.medium {
+            background: #FF9800;
+        }
+
+        .battery-level.low {
+            background: #f44336;
+        }
+
+        /* Center Panel - Room Image View */
+        .center-panel {
+            flex: 1;
+            background: #ffffff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+            max-height: 100vh;
+            margin-left: 350px;
+            margin-right: 300px;
+            overflow: hidden;
+            border-left: 1px solid #e9ecef;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .room-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+            min-height: 500px;
+            max-height: 100vh;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .device-marker {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        .device-marker.camera {
+            background: #9ecbd7;
+        }
+
+        .device-marker.lock {
+            background: #ffc107;
+        }
+
+        .device-marker.sensor {
+            background: #90d7b7;
+        }
+
+        .device-marker:hover {
+            transform: scale(1.1);
+        }
+
+        .device-icon {
+            color: white;
+            font-size: 20px;
+        }
+
+        .device-tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .device-marker:hover .device-tooltip {
+            opacity: 1;
+        }
+
+        /* Right Panel - Activity Feed */
+        .right-panel {
+            width: 320px;
+            background: #ffffff;
+            padding: 28px;
+            overflow-y: auto;
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            border-left: 1px solid #e9ecef;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+        }
+
+        .activity-header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .activity-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0;
+            line-height: 1.3;
+        }
+
+        .members-section {
+            margin-bottom: 28px;
+        }
+
+        .members-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        .members-list {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b393b4;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .activity-section {
+            margin-bottom: 28px;
+        }
+
+        .activity-date {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            justify-content: center;
+            padding: 0 8px;
+        }
+
+        .date-item {
+            padding: 10px 16px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .date-item:hover {
+            background: #e9ecef;
+        }
+
+        .date-item.active {
+            background: #b393b4;
+            color: white;
+        }
+
+        .activity-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+        .activity-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: relative;
+            border: 1px solid #e9ecef;
+            margin-left: 40px;
+        }
+
+        .activity-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #b393b4;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #e9ecef;
+        }
+
+        .activity-time {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .activity-location {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .toggle-switch.active {
+            background: #9ecbd7;
+            color: white;
+        }
+
+        .toggle-switch.active::after {
+            content: 'on';
+            position: absolute;
+            left: 8px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .left-panel {
+                width: 300px;
+            }
+            .right-panel {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+            .center-panel {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel - Device Controls -->
+        <div class="left-panel">
+            <div class="location-header">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <div class="location-info">
+                    <h1 id="location-name">Your Home</h1>
+                    <div class="address">401 Magnetic Drive Unit 2</div>
+                </div>
+            </div>
+
+            <div class="room-filters">
+                <button class="room-filter active" onclick="filterByRoom('all')">All Rooms</button>
+                <button class="room-filter" onclick="filterByRoom('Living Room')">Living Room</button>
+                <button class="room-filter" onclick="filterByRoom('Kitchen')">Kitchen</button>
+                <button class="room-filter" onclick="filterByRoom('Bedroom')">Bedroom</button>
+            </div>
+
+            <div class="device-section">
+                <div class="section-header">
+                    <span class="section-title">Cameras</span>
+                    <span class="device-count" id="camera-count">0</span>
+                </div>
+                <div id="camera-devices"></div>
+            </div>
+
+            <div class="device-section">
+                <div class="section-header">
+                    <span class="section-title">Locks</span>
+                    <span class="device-count" id="lock-count">0</span>
+                </div>
+                <div id="lock-devices"></div>
+            </div>
+
+            <div class="device-section">
+                <div class="section-header">
+                    <span class="section-title">Sensors</span>
+                    <span class="device-count" id="sensor-count">0</span>
+                </div>
+                <div id="sensor-devices"></div>
+            </div>
+        </div>
+
+        <!-- Center Panel - Room Image View -->
+        <div class="center-panel">
+            <div class="room-container">
+                <img id="room-image" class="room-image" src="assets/house.jpg" alt="House View">
+                <!-- Device markers will be added here dynamically -->
+            </div>
+        </div>
+
+        <!-- Right Panel - Activity Feed -->
+        <div class="right-panel">
+            <div class="activity-header">
+                <h2 class="activity-title">Smart Home Security System</h2>
+            </div>
+
+            <div class="members-section">
+                <h3 class="members-title">Members</h3>
+                <div class="members-list">
+                    <div class="member-avatar">SW</div>
+                    <div class="member-avatar">OB</div>
+                    <div class="member-avatar">JD</div>
+                    <div class="member-avatar">+3</div>
+                </div>
+            </div>
+
+            <div class="activity-section">
+                <div class="activity-date">December 03, 2023</div>
+                <div class="date-selector">
+                    <div class="date-item">11 Mon</div>
+                    <div class="date-item">12 Tue</div>
+                    <div class="date-item">13 Wed</div>
+                    <div class="date-item active">14 Thu</div>
+                    <div class="date-item">15 Fri</div>
+                    <div class="date-item">16 Sat</div>
+                    <div class="date-item">17 Sun</div>
+                </div>
+                <div class="activity-timeline" id="activity-timeline">
+                    <!-- Activity items will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <script>
+        // Global variables
+        let currentLocation = 'Your Home';
+        let currentRoomFilter = 'all';
+        let filteredDevices = [];
+        let currentRoomImage = 'house.jpg';
+
+        // Room image mapping
+        const roomImages = {
+            'all': 'assets/house.jpg',
+            'Living Room': 'assets/livingroom.jpg',
+            'Kitchen': 'assets/kitchen.jpg',
+            'Bedroom': 'assets/bedroom.jpg'
+        };
+
+        // Device positions for each room (percentage-based)
+        const devicePositions = {
+            'all': {
+                'Kitchen Camera': { x: 30, y: 40 },
+                'Porch Camera': { x: 70, y: 20 },
+                'Entryway Camera': { x: 50, y: 80 },
+                'Backyard Camera': { x: 80, y: 60 },
+                'Garage Door Controller': { x: 20, y: 70 },
+                'Front Door Lock': { x: 45, y: 85 },
+                'Backyard Sensor': { x: 75, y: 75 }
+            },
+            'Living Room': {
+                'Living Room Light': { x: 50, y: 50 },
+                'Living Room Speaker': { x: 30, y: 60 }
+            },
+            'Kitchen': {
+                'Kitchen Camera': { x: 60, y: 40 },
+                'Kitchen Plug': { x: 40, y: 70 }
+            },
+            'Bedroom': {
+                'Bedroom Thermostat': { x: 50, y: 50 },
+                'Bedroom Lamp': { x: 30, y: 60 }
+            }
+        };
+
+        // Initialize the page
+        function initializeLocationView() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const location = urlParams.get('location') || 'Your Home';
+            currentLocation = location;
+            
+            document.getElementById('location-name').textContent = location;
+            loadDevicesForLocation(location);
+            renderActivityTimeline();
+        }
+
+        // Load devices for the selected location
+        function loadDevicesForLocation(location) {
+            // Filter devices based on location (in a real app, this would be API call)
+            filteredDevices = devices.filter(device => {
+                // For demo purposes, we'll show all devices but you can filter by location
+                return true;
+            });
+            
+            renderDevices();
+            updateRoomImage('all');
+        }
+
+        // Update room image based on filter
+        function updateRoomImage(room) {
+            const roomImage = document.getElementById('room-image');
+            const imagePath = roomImages[room] || roomImages['all'];
+            
+            roomImage.src = imagePath;
+            currentRoomImage = imagePath;
+            
+            // Clear existing markers
+            const existingMarkers = document.querySelectorAll('.device-marker');
+            existingMarkers.forEach(marker => marker.remove());
+            
+            // Add new markers for the selected room
+            renderDeviceMarkers(room);
+        }
+
+        // Render device markers on the room image
+        function renderDeviceMarkers(room) {
+            const roomContainer = document.querySelector('.room-container');
+            const positions = devicePositions[room] || devicePositions['all'];
+            
+            // Get devices for this room
+            const roomDevices = room === 'all' ? 
+                filteredDevices : 
+                filteredDevices.filter(device => device.Location === room);
+            
+            // Add markers for devices that have positions defined
+            roomDevices.forEach(device => {
+                const position = positions[device.DeviceName];
+                if (position) {
+                    const marker = createDeviceMarker(device, position);
+                    roomContainer.appendChild(marker);
+                }
+            });
+        }
+
+        // Create a device marker
+        function createDeviceMarker(device, position) {
+            const marker = document.createElement('div');
+            marker.className = `device-marker ${getDeviceTypeClass(device.DeviceType)}`;
+            marker.style.left = `${position.x}%`;
+            marker.style.top = `${position.y}%`;
+            marker.onclick = () => selectDevice(device);
+
+            const icon = document.createElement('div');
+            icon.className = 'device-icon';
+            icon.textContent = getDeviceIcon(device.DeviceType);
+            marker.appendChild(icon);
+
+            // Add tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'device-tooltip';
+            tooltip.textContent = device.DeviceName;
+            tooltip.style.left = '60px';
+            tooltip.style.top = '0px';
+            marker.appendChild(tooltip);
+
+            return marker;
+        }
+
+        // Render devices in the left panel
+        function renderDevices() {
+            const cameras = filteredDevices.filter(d => d.DeviceType === 'Camera');
+            const locks = filteredDevices.filter(d => d.DeviceType === 'Door Lock');
+            const sensors = filteredDevices.filter(d => d.DeviceType === 'Sensor');
+
+            document.getElementById('camera-count').textContent = cameras.length;
+            document.getElementById('lock-count').textContent = locks.length;
+            document.getElementById('sensor-count').textContent = sensors.length;
+
+            renderDeviceSection('camera-devices', cameras, 'camera');
+            renderDeviceSection('lock-devices', locks, 'lock');
+            renderDeviceSection('sensor-devices', sensors, 'sensor');
+        }
+
+        // Render a device section
+        function renderDeviceSection(containerId, devices, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            devices.forEach(device => {
+                const deviceCard = createDeviceCard(device, type);
+                container.appendChild(deviceCard);
+            });
+        }
+
+        // Create a device card
+        function createDeviceCard(device, type) {
+            const card = document.createElement('div');
+            card.className = `device-card ${type}`;
+            card.onclick = () => toggleDevice(device);
+
+            const isOn = device.Status === 'On';
+            const batteryLevel = Math.floor(Math.random() * 100) + 1; // Mock battery level
+
+            // Get camera image based on device name
+            let cameraImage = '';
+            if (type === 'camera') {
+                const deviceName = device.DeviceName.toLowerCase();
+                if (deviceName.includes('kitchen')) {
+                    cameraImage = 'assets/kitchencam.jpg';
+                } else if (deviceName.includes('porch')) {
+                    cameraImage = 'assets/porchcamera.jpg';
+                } else if (deviceName.includes('entryway')) {
+                    cameraImage = 'assets/entrywaycamera.jpg';
+                } else if (deviceName.includes('backyard')) {
+                    cameraImage = 'assets/backyardcamera.jpg';
+                } else {
+                    cameraImage = 'assets/kitchencam.jpg'; // Default fallback
+                }
+            }
+
+            card.innerHTML = `
+                <div class="device-preview" style="${type === 'camera' ? `background-image: url('${cameraImage}')` : ''}">
+                    ${type === 'camera' ? '' : type === 'lock' ? '🔒' : '🛰️'}
+                </div>
+                <div class="device-content">
+                    <div class="device-name">${device.DeviceName}</div>
+                    <div class="device-schedule">
+                        <span class="schedule-icon">🕐</span>
+                        <span>12 pm - 6 pm</span>
+                    </div>
+                </div>
+                <div class="device-status">
+                    <div class="status-indicator ${isOn ? 'on' : 'off'}"></div>
+                    <div class="toggle-switch ${isOn ? 'active' : ''}" onclick="event.stopPropagation(); toggleDevice('${device.DeviceID}')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Get device type class for styling
+        function getDeviceTypeClass(deviceType) {
+            switch(deviceType) {
+                case 'Camera': return 'camera';
+                case 'Door Lock': return 'lock';
+                case 'Sensor': return 'sensor';
+                default: return 'sensor';
+            }
+        }
+
+        // Get device icon
+        function getDeviceIcon(deviceType) {
+            switch(deviceType) {
+                case 'Camera': return '📷';
+                case 'Door Lock': return '🔒';
+                case 'Sensor': return '🛰️';
+                default: return '⚙️';
+            }
+        }
+
+        // Toggle device status
+        function toggleDevice(deviceId) {
+            const device = typeof deviceId === 'string' ? 
+                devices.find(d => d.DeviceID == deviceId) : deviceId;
+            
+            if (device) {
+                device.Status = device.Status === 'On' ? 'Off' : 'On';
+                renderDevices();
+                addActivityLog(device);
+            }
+        }
+
+        // Select device (for house model interaction)
+        function selectDevice(device) {
+            // Highlight the device in the left panel
+            const deviceCards = document.querySelectorAll('.device-card');
+            deviceCards.forEach(card => card.style.border = '2px solid transparent');
+            
+            // Find and highlight the corresponding card
+            const deviceName = device.DeviceName;
+            const cards = document.querySelectorAll('.device-name');
+            cards.forEach((name, index) => {
+                if (name.textContent === deviceName) {
+                    name.closest('.device-card').style.border = '2px solid #4CAF50';
+                }
+            });
+        }
+
+        // Filter devices by room
+        function filterByRoom(room) {
+            currentRoomFilter = room;
+            
+            // Update active filter button
+            document.querySelectorAll('.room-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update room image
+            updateRoomImage(room);
+
+            // Filter devices
+            if (room === 'all') {
+                filteredDevices = devices;
+            } else {
+                filteredDevices = devices.filter(device => device.Location === room);
+            }
+
+            renderDevices();
+        }
+
+        // Add activity log entry
+        function addActivityLog(device) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-time">${timeString}</div>
+                <div class="activity-text">${device.DeviceName} was ${device.Status === 'On' ? 'activated' : 'deactivated'}</div>
+                <div class="activity-location">${device.Location}</div>
+            `;
+
+            const timeline = document.getElementById('activity-timeline');
+            timeline.insertBefore(activityItem, timeline.firstChild);
+
+            // Keep only last 10 activities
+            const activities = timeline.querySelectorAll('.activity-item');
+            if (activities.length > 10) {
+                activities[activities.length - 1].remove();
+            }
+        }
+
+        // Render activity timeline
+        function renderActivityTimeline() {
+            const timeline = document.getElementById('activity-timeline');
+            
+            // Add some mock activities
+            const mockActivities = [
+                { time: '07:00 am', text: 'Back Door was Closed', location: 'Home' },
+                { time: '08:00 am', text: 'Back Door was Opened', location: 'Home' },
+                { time: '09:30 am', text: 'Kitchen Camera detected motion', location: 'Kitchen' },
+                { time: '10:15 am', text: 'Front Door Lock activated', location: 'Entryway' }
+            ];
+
+            mockActivities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-time">${activity.time}</div>
+                    <div class="activity-text">${activity.text}</div>
+                    <div class="activity-location">${activity.location}</div>
+                `;
+                timeline.appendChild(activityItem);
+            });
+        }
+
+        // Go back to main dashboard
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeLocationView);
+    </script>
+</body>
+</html> 

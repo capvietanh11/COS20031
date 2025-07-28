@@ -22,8 +22,8 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><span>🏠</span> Dashboard</li>
-                    <li class="active"><span>📺</span> Devices</li>
+                    <li class="active"><span>🏠</span> Dashboard</li>
+                    <li><span>📺</span> Devices</li>
                     <li id="schedule-tab"><span>⏰</span> Schedule</li>
                     <li><span>📊</span> Analytics</li>
                 </ul>
@@ -37,7 +37,7 @@
         </aside>
         <main class="main-content">
             <header class="main-header">
-                <h2 id="main-header-title">Devices</h2>
+                <h2 id="main-header-title">Dashboard</h2>
                 <div class="main-header-actions">
                     <select id="sort-devices-dropdown" class="sort-dropdown">
                         <option value="name-asc">Sort by Name (A-Z)</option>
@@ -54,7 +54,7 @@
                     <!-- Room tabs will be rendered here -->
                 </ul>
             </nav>
-            <section id="device-groups">
+            <section id="device-groups" style="display:none;">
                 <!-- Device groups and cards will be rendered here by app.js -->
             </section>
             <section id="schedule-section" style="display:none;">
@@ -66,7 +66,7 @@
                     <!-- Event flexboxes will be rendered here -->
                 </div>
             </section>
-            <section id="dashboard-section" style="display:none;">
+            <section id="dashboard-section">
                 <div class="dashboard-top-row" style="display:flex;gap:2rem;margin-bottom:2rem;">
                     <div class="dashboard-summary-card" style="flex:1;"></div>
                     <div class="dashboard-line-chart" style="flex:2;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:1.5rem;">
@@ -295,6 +295,30 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/mock-data.js"></script>
-    <script src="js/app.js"></script>
+    
+    <!-- Core modules (load in dependency order) -->
+    <script src="js/core/state.js"></script>
+    <script src="js/core/notifications.js"></script>
+    
+    <!-- Device modules -->
+    <script src="js/devices/device-icons.js"></script>
+    <script src="js/devices/device-controls.js"></script>
+    <script src="js/devices/device-cards.js"></script>
+    
+    <!-- Modal modules -->
+    <script src="js/modals/device-modal.js"></script>
+    
+    <!-- Feature modules -->
+    <script src="js/schedule/schedule.js"></script>
+    <script src="js/dashboard/dashboard.js"></script>
+    <script src="js/analytics/analytics.js"></script>
+    <script src="js/settings/settings.js"></script>
+    
+    <!-- Navigation and events -->
+    <script src="js/navigation/navigation.js"></script>
+    <script src="js/events/event-handlers.js"></script>
+    
+    <!-- Main application -->
+    <script src="js/app-new.js"></script>
 </body>
 </html>
